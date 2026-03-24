@@ -44,24 +44,20 @@ const SignIn: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      console.log('Intentando login con:', user.email);
-
-      const response = await SecurityService.login(user);
-      console.log('✅ Login exitoso:', response);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      localStorage.setItem('token', response.token);
-      await createSession(response.user?.id || 1, 'manual-token');
-
-      navigate('/', { replace: true });
+        const response = await SecurityService.login(user);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('token', response.token);
+        
+        // ✅ usar el token real y el ID correcto
+        await createSession(response.user?.id, response.token);
+        
+        navigate('/', { replace: true });
     } catch (error: any) {
-      console.error('❌ Error en login:', error);
-      setError(
-        error.message || 'Error al iniciar sesión. Verifica tus credenciales.',
-      );
+        setError(error.message || 'Error al iniciar sesión.');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const handleGoogleLogin = async (credentialResponse: any) => {
     setProviderLoading('google');
@@ -117,7 +113,7 @@ const SignIn: React.FC = () => {
 
       const userData = await SecurityService.loginWithGitHub();
       console.log('✅ Login con GitHub exitoso:', userData);
-      await createSession(userData.id || 'githubUser', 'github-token');
+      await createSession(userData.user?.id || userData.id, userData.token);
 
       navigate('/', { replace: true });
     } catch (error: any) {
@@ -137,7 +133,7 @@ const SignIn: React.FC = () => {
 
       const userData = await SecurityService.loginWithMicrosoft();
       console.log('✅ Login con Microsoft exitoso:', userData);
-      await createSession(userData.id || 'microsoftUser', 'microsoft-token');
+      await createSession(userData.user?.id || userData.id, userData.token);
 
       navigate('/', { replace: true });
     } catch (error: any) {
