@@ -77,6 +77,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
       return;
     }
     try {
+<<<<<<< HEAD
       // reCAPTCHA v3 invisible: executeRecaptcha solo al enviar el formulario (sin interacción previa con el widget).
       let captchaToken: string | undefined;
       if (getCaptchaToken) {
@@ -139,9 +140,9 @@ const SignInForm: React.FC<SignInFormProps> = ({
           : 'Error al iniciar sesión. Verifica tus credenciales.';
       setError(message);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const handleGoogleLogin = async (credentialResponse: { credential?: string }) => {
     setProviderLoading('google');
@@ -189,7 +190,12 @@ const SignInForm: React.FC<SignInFormProps> = ({
 
     try {
       const userData = await SecurityService.loginWithGitHub();
+<<<<<<< HEAD
       await createSession(userData.id || 'githubUser', 'github-token');
+=======
+      console.log('✅ Login con GitHub exitoso:', userData);
+      await createSession(userData.user?.id || userData.id, userData.token);
+>>>>>>> 805822f9fdf644d8a200d3d9a5d25bf9c852ccfb
 
       navigate('/', { replace: true });
     } catch (err: unknown) {
@@ -207,7 +213,12 @@ const SignInForm: React.FC<SignInFormProps> = ({
 
     try {
       const userData = await SecurityService.loginWithMicrosoft();
+<<<<<<< HEAD
       await createSession(userData.id || 'microsoftUser', 'microsoft-token');
+=======
+      console.log('✅ Login con Microsoft exitoso:', userData);
+      await createSession(userData.user?.id || userData.id, userData.token);
+>>>>>>> 805822f9fdf644d8a200d3d9a5d25bf9c852ccfb
 
       navigate('/', { replace: true });
     } catch (err: unknown) {
