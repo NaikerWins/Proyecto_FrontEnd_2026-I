@@ -5,6 +5,7 @@ export interface User {
     id?: string;
     name?: string;
     email?: string;
+    role?: string;
     password?: string;
     age?: number;
     phone?: string;
@@ -16,4 +17,5 @@ export interface User {
     picture?: string;
     googleId?: string;    
     googleAccount?: boolean;
+    captchaToken?: string;
 }

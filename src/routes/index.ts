@@ -38,62 +38,23 @@ const CreateRole = lazy(() => import('../pages/Roles/Create'));
 const UpdateRole = lazy(() => import('../pages/Roles/Update'));
 const UserRolesList = lazy(() => import('../pages/UserRoles/List'));
 const AssignRole = lazy(() => import('../pages/UserRoles/AssignRole'));
-const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
-const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
-const ListAddresses = lazy(() => import('../pages/addresses/List'));
-const CreateAddress = lazy(() => import('../pages/addresses/Create'));
-const UpdateAddress = lazy(() => import('../pages/addresses/Update'));
 
-const coreRoutes = [
-  {
-    path: '/demo',
-    title: 'Demo',
-    component: Demo,
-  },
-  {
-    path: '/profiles/update',
-    title: 'Update Profile',
-    component: UpdateProfile,
-  },
+/** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
+export const administrationRoutes = [
   {
     path: '/RolePermission/list',
-  title: 'list RolePermission',
-  component: RolePermissionPage,
-  },
-  {
-    path: '/profiles/list',
-    title: 'list Profile',
-    component: ListProfile,
+    title: 'list RolePermission',
+    component: RolePermissionPage,
   },
   {
     path: '/permission/list',
-  title: 'LIST permission',
-  component: ListPermissions,
-  },
-  {
-    path: '/auth/complete-profile',
-    title: 'Complete Profile',
-    component: CompleteProfile,
+    title: 'LIST permission',
+    component: ListPermissions,
   },
   {
     path: '/roles',
     title: 'Roles List',
     component: ListRoles,
-  },
-  {
-    path: '/passwords/:userId',
-    title: 'User Passwords',
-    component: UserPasswordsList,
-  },
-  {
-    path: '/profiles/create',
-    title: 'Create Profile',
-    component: createProfiles,
-  },
-  {
-    path: '/passwords/:userId/crear',
-    title: 'Create Password',
-    component: CreatePassword,
   },
   {
     path: '/roles/crear',
@@ -115,6 +76,65 @@ const coreRoutes = [
     title: 'Assign Role',
     component: AssignRole,
   },
+  {
+    path: '/users/editar/:id',
+    title: 'Update Users',
+    component: UpdateUser,
+  },
+  {
+    path: '/users/crear',
+    title: 'Create Users',
+    component: CreateUser,
+  },
+  {
+    path: '/users',
+    title: 'Users List',
+    component: ListUsers,
+  },
+];
+
+const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
+const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
+const ListAddresses = lazy(() => import('../pages/addresses/List'));
+const CreateAddress = lazy(() => import('../pages/addresses/Create'));
+const UpdateAddress = lazy(() => import('../pages/addresses/Update'));
+
+export const generalRoutes = [
+  {
+    path: '/demo',
+    title: 'Demo',
+    component: Demo,
+  },
+  {
+    path: '/profiles/update',
+    title: 'Update Profile',
+    component: UpdateProfile,
+  },
+  {
+    path: '/profiles/list',
+    title: 'list Profile',
+    component: ListProfile,
+  },
+  {
+    path: '/auth/complete-profile',
+    title: 'Complete Profile',
+    component: CompleteProfile,
+  },
+  {
+    path: '/passwords/:userId',
+    title: 'User Passwords',
+    component: UserPasswordsList,
+  },
+  {
+    path: '/profiles/create',
+    title: 'Create Profile',
+    component: createProfiles,
+  },
+  {
+    path: '/passwords/:userId/crear',
+    title: 'Create Password',
+    component: CreatePassword,
+  },
 
   {
     path: '/addresses',
@@ -132,21 +152,6 @@ const coreRoutes = [
     component: UpdateAddress,
   },
 
-  {
-    path: '/users/editar/:id',
-    title: 'Update Users',
-    component: UpdateUser,
-  },
-  {
-    path: '/users/crear',
-    title: 'Create Users',
-    component: CreateUser,
-  },
-  {
-    path: '/users',
-    title: 'Users List',
-    component: ListUsers,
-  },
   {
     path: '/calendar',
     title: 'Calender',
@@ -253,23 +258,21 @@ const coreRoutes = [
     component: DeviceForm,
   },
   {
-  path: '/sessions',
-  title: 'Sessions List',
-  component: SessionList,
-},
-{
-  path: '/sessions/:userId',
-  title: 'User Sessions',
-  component: SessionList,
-},
-{
-  path: '/sessions/:userId/crear',
-  title: 'Create Session',
-  component: SessionForm,
-},
-
-
+    path: '/sessions',
+    title: 'Sessions List',
+    component: SessionList,
+  },
+  {
+    path: '/sessions/:userId',
+    title: 'User Sessions',
+    component: SessionList,
+  },
+  {
+    path: '/sessions/:userId/crear',
+    title: 'Create Session',
+    component: SessionForm,
+  },
 ];
 
-const routes = [...coreRoutes];
+const routes = [...generalRoutes, ...administrationRoutes];
 export default routes;

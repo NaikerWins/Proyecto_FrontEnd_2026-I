@@ -2,6 +2,9 @@ import { NavLink, useLocation } from 'react-router-dom';
 import Logo from '../images/logo/logo.svg';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
+import { hasAdministrationAccess } from '../constants/privilegedRoles';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -11,6 +14,8 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
+  const user = useSelector((s: RootState) => s.user.user);
+  const showAdminMenu = hasAdministrationAccess(user?.role);
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -96,43 +101,50 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
           {/* MENU */}
           <div>
-            <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
-              MENU
-            </h3>
+            {showAdminMenu && (
+              <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
+                MENU
+              </h3>
+            )}
 
             <ul className="mb-6 flex flex-col gap-1.5">
-              <li>
-                <NavLink
-                  to="/users"
-                  className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('users') && 'bg-graydark dark:bg-meta-4'
-                  }`}
-                >
-                  Usuarios
-                </NavLink>
-              </li>
+              {showAdminMenu && (
+                <>
+                  <li>
+                    <NavLink
+                      to="/users"
+                      className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                        pathname.includes('users') && 'bg-graydark dark:bg-meta-4'
+                      }`}
+                    >
+                      Usuarios
+                    </NavLink>
+                  </li>
 
-              <li>
-                <NavLink
-                  to="/roles"
-                  className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('roles') && 'bg-graydark dark:bg-meta-4'
-                  }`}
-                >
-                  Roles
-                </NavLink>
-              </li>
+                  <li>
+                    <NavLink
+                      to="/roles"
+                      className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                        pathname.includes('roles') && 'bg-graydark dark:bg-meta-4'
+                      }`}
+                    >
+                      Roles
+                    </NavLink>
+                  </li>
 
-              <li>
-                <NavLink
-                  to="/permission/list"
-                  className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('permission') && 'bg-graydark dark:bg-meta-4'
-                  }`}
-                >
-                  Permissions
-                </NavLink>
-              </li>
+                  <li>
+                    <NavLink
+                      to="/permission/list"
+                      className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                        pathname.includes('permission') &&
+                        'bg-graydark dark:bg-meta-4'
+                      }`}
+                    >
+                      Permissions
+                    </NavLink>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 

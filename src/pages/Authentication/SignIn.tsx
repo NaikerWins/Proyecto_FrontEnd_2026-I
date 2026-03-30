@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { User } from '../../models/User';
 import SecurityService from '../../services/securityService';
 import Breadcrumb from '../../components/Breadcrumb';
-import { useNavigate } from 'react-router-dom';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import {
   Box,
   Button,
@@ -17,112 +18,184 @@ import {
   Divider,
   Alert,
   CircularProgress,
+  Link,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { GitHub, Microsoft } from '@mui/icons-material';
 import { SessionService } from '../../services/sessionsService';
+import RecaptchaLegalCorner from '../../components/Auth/RecaptchaLegalCorner';
+import {
+  SESSION_INVALID_STORAGE_KEY,
+} from '../../constants/authMessages';
 
-const SignIn: React.FC = () => {
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+
+type SignInFormProps = {
+  getCaptchaToken?: () => Promise<string | undefined>;
+  /** Sin VITE_RECAPTCHA_SITE_KEY el login fallará si el back exige captcha */
+  showRecaptchaWarning?: boolean;
+};
+
+const SignInForm: React.FC<SignInFormProps> = ({
+  getCaptchaToken,
+  showRecaptchaWarning,
+}) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [sessionFlash] = useState(() => {
+    const v = sessionStorage.getItem(SESSION_INVALID_STORAGE_KEY);
+    if (v) sessionStorage.removeItem(SESSION_INVALID_STORAGE_KEY);
+    return v || undefined;
+  });
+  const infoMessage =
+    (location.state as { message?: string } | undefined)?.message ?? sessionFlash;
   const [providerLoading, setProviderLoading] = useState<string | null>(null);
+
   const createSession = async (userId: string | number, token: string) => {
     try {
-        const FACode = Math.floor(100000 + Math.random() * 900000).toString();
-        await SessionService.create(userId, {
-            token,
-            FACode,
-            state: 'active',
-            expiration: new Date(Date.now() + 3600 * 1000).toISOString(),
-        });
-    } catch (error) {
-        // Sessions es de otro microservicio — ignorar
+      const FACode = Math.floor(100000 + Math.random() * 900000).toString();
+      await SessionService.create(userId, {
+        token,
+        FACode,
+        state: 'active',
+        expiration: new Date(Date.now() + 3600 * 1000).toISOString(),
+      });
+    } catch {
+      /* Sessions es otro microservicio */
     }
-};
+  };
 
   const handleLogin = async (user: User) => {
     setLoading(true);
     setError('');
+    const emailTrim = String(user.email ?? '').trim();
+    if (!emailTrim) {
+      setError('Ingresa tu correo electrónico.');
+      setLoading(false);
+      return;
+    }
     try {
-      console.log('Intentando login con:', user.email);
+      // reCAPTCHA v3 invisible: executeRecaptcha solo al enviar el formulario (sin interacción previa con el widget).
+      let captchaToken: string | undefined;
+      if (getCaptchaToken) {
+        captchaToken = await getCaptchaToken();
+      }
 
-      const response = await SecurityService.login(user);
-      console.log('✅ Login exitoso:', response);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      localStorage.setItem('token', response.token);
-      await createSession(response.user?.id || 1, 'manual-token');
+      const response = (await SecurityService.login({
+        ...user,
+        email: emailTrim,
+        captchaToken: captchaToken ?? user.captchaToken,
+      })) as {
+        needsVerification?: boolean;
+        status?: string;
+        email?: string;
+        token?: string;
+        user?: unknown;
+      };
 
+      if (response.needsVerification) {
+        const email = response.email || user.email;
+        navigate('/auth/verify-2fa', {
+          replace: true,
+          state: email ? { email } : undefined,
+        });
+        return;
+      }
+
+      /** Paso 1 de 2FA: no exigir `!user` en la respuesta (a veces viene `user` vacío o parcial). */
+      const needs2FA =
+        String(response?.status ?? '').toUpperCase() === 'VERIFY_2FA' ||
+        (!response?.token &&
+          String(response?.email ?? user.email ?? '').trim() !== '');
+
+      if (needs2FA) {
+        const email = (response.email as string | undefined) || user.email;
+        navigate('/auth/verify-2fa', {
+          replace: true,
+          state: email ? { email } : undefined,
+        });
+        return;
+      }
+
+      const token = response.token;
+      if (!token) {
+        setError(
+          'No se recibió un token de sesión válido del servidor.',
+        );
+        return;
+      }
+
+      const u = response.user || response;
+      if (u && token) {
+        await createSession((u as { id?: string | number }).id || 1, token);
+      }
       navigate('/', { replace: true });
-    } catch (error: any) {
-      console.error('❌ Error en login:', error);
-      setError(
-        error.message || 'Error al iniciar sesión. Verifica tus credenciales.',
-      );
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Error al iniciar sesión. Verifica tus credenciales.';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async (credentialResponse: any) => {
+  const handleGoogleLogin = async (credentialResponse: { credential?: string }) => {
     setProviderLoading('google');
     setError('');
 
     try {
-        console.log('🔑 Credencial de Google recibida:', credentialResponse);
+      if (!credentialResponse.credential) {
+        throw new Error('No se recibió credencial de Google');
+      }
 
-        if (!credentialResponse.credential) {
-            throw new Error('No se recibió credencial de Google');
-        }
+      const userData = await SecurityService.loginWithGoogle({
+        credential: credentialResponse.credential,
+        ...jwtDecode(credentialResponse.credential),
+      });
 
-        // Manda el objeto completo con credential incluida
-        const userData = await SecurityService.loginWithGoogle({
-            credential: credentialResponse.credential,  // ← token original para el backend
-            ...jwtDecode(credentialResponse.credential) // ← datos decodificados para el fallback
-        });
-
-        console.log('✅ Login con Google exitoso:', userData);
-
-        // Si es usuario nuevo, pide datos adicionales
-        if (userData.isNewUser) {
-    navigate('/auth/complete-profile', {
-        state: {
+      if (userData.isNewUser) {
+        navigate('/auth/complete-profile', {
+          state: {
             user: userData.user,
             token: userData.token,
-            googleCredential: credentialResponse.credential  // ← agrega esto
-        }
-    });
-    return;
-}
+            googleCredential: credentialResponse.credential,
+          },
+        });
+        return;
+      }
 
-        await createSession(
-            userData.user?.id || userData.id,
-            credentialResponse.credential,
-        );
+      await createSession(
+        userData.user?.id || userData.id,
+        credentialResponse.credential,
+      );
 
-        navigate('/', { replace: true });
-    } catch (error: any) {
-        console.error('❌ Error en login con Google:', error);
-        setError(error.message || 'Error al autenticar con Google.');
+      navigate('/', { replace: true });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Error al autenticar con Google.';
+      setError(message);
     } finally {
-        setProviderLoading(null);
+      setProviderLoading(null);
     }
-};
+  };
 
   const handleGitHubLogin = async () => {
     setProviderLoading('github');
     setError('');
 
     try {
-      console.log('🔐 Iniciando login con GitHub...');
-
       const userData = await SecurityService.loginWithGitHub();
-      console.log('✅ Login con GitHub exitoso:', userData);
       await createSession(userData.id || 'githubUser', 'github-token');
 
       navigate('/', { replace: true });
-    } catch (error: any) {
-      console.error('❌ Error en login con GitHub:', error);
-      setError(error.message || 'Error al autenticar con GitHub.');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Error al autenticar con GitHub.';
+      setError(message);
     } finally {
       setProviderLoading(null);
     }
@@ -133,29 +206,23 @@ const SignIn: React.FC = () => {
     setError('');
 
     try {
-      console.log('🔐 Iniciando login con Microsoft...');
-
       const userData = await SecurityService.loginWithMicrosoft();
-      console.log('✅ Login con Microsoft exitoso:', userData);
       await createSession(userData.id || 'microsoftUser', 'microsoft-token');
 
       navigate('/', { replace: true });
-    } catch (error: any) {
-      console.error('❌ Error en login con Microsoft:', error);
-      setError(error.message || 'Error al autenticar con Microsoft.');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Error al autenticar con Microsoft.';
+      setError(message);
     } finally {
       setProviderLoading(null);
     }
   };
 
   const handleGoogleError = () => {
-    console.error('❌ Error en el flujo de Google OAuth');
     setError('Error al iniciar sesión con Google. Intenta de nuevo.');
     setProviderLoading(null);
   };
-
-  const GOOGLE_CLIENT_ID =
-    '408294359663-pihvunt5ou1h5nkul77du76vvlsq66d1.apps.googleusercontent.com';
 
   return (
     <>
@@ -176,9 +243,23 @@ const SignIn: React.FC = () => {
             Bienvenido de vuelta, por favor ingresa tus credenciales
           </Typography>
 
+          {infoMessage && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {infoMessage}
+            </Alert>
+          )}
+
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
+            </Alert>
+          )}
+
+          {showRecaptchaWarning && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              Falta <code>VITE_RECAPTCHA_SITE_KEY</code> en <code>.env</code>. Sin la clave de
+              sitio reCAPTCHA v3 el login puede devolver 403 (configura la misma pareja que{' '}
+              <code>RECAPTCHA_SECRET</code> en el backend).
             </Alert>
           )}
 
@@ -196,7 +277,7 @@ const SignIn: React.FC = () => {
                 .required('La contraseña es obligatoria'),
             })}
             onSubmit={(values) => {
-              handleLogin(values);
+              void handleLogin(values);
             }}
           >
             {({ errors, touched, handleSubmit }) => (
@@ -231,6 +312,18 @@ const SignIn: React.FC = () => {
                   />
                 </Box>
 
+                <Box sx={{ textAlign: 'right', mb: 2 }}>
+                  <Link
+                    component={RouterLink}
+                    to="/auth/forgot-password"
+                    variant="body2"
+                    underline="hover"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    ¿Olvidó su contraseña?
+                  </Link>
+                </Box>
+
                 <Button
                   type="submit"
                   fullWidth
@@ -255,22 +348,19 @@ const SignIn: React.FC = () => {
             </Typography>
           </Divider>
 
-          {/* Botones de proveedores OAuth */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
-            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <GoogleLogin
-                  onSuccess={handleGoogleLogin}
-                  onError={handleGoogleError}
-                  theme="filled_blue"
-                  size="large"
-                  text="signin_with"
-                  shape="rectangular"
-                  width="300"
-                  locale="es"
-                />
-              </Box>
-            </GoogleOAuthProvider>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={handleGoogleError}
+                theme="filled_blue"
+                size="large"
+                text="signin_with"
+                shape="rectangular"
+                width="300"
+                locale="es"
+              />
+            </Box>
 
             <Button
               fullWidth
@@ -346,8 +436,48 @@ const SignIn: React.FC = () => {
           </Box>
         </Paper>
       </Container>
+
+      {getCaptchaToken ? <RecaptchaLegalCorner /> : null}
     </>
   );
+};
+
+const RECAPTCHA_RETRIES = 20;
+const RECAPTCHA_RETRY_MS = 200;
+
+/**
+ * Requisito: reCAPTCHA v3 se ejecuta automáticamente al enviar el formulario email/contraseña,
+ * sin interacción del usuario con el widget (sin checkbox). No se llama a executeRecaptcha al montar la página.
+ */
+const SignInWithRecaptcha: React.FC = () => {
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
+  const getCaptchaToken = useCallback(async (): Promise<string | undefined> => {
+    for (let attempt = 0; attempt < RECAPTCHA_RETRIES; attempt++) {
+      if (attempt > 0) {
+        await new Promise((r) => setTimeout(r, RECAPTCHA_RETRY_MS));
+      }
+      try {
+        if (!executeRecaptcha) continue;
+        const t = await executeRecaptcha('login');
+        if (t && String(t).trim()) {
+          return t.trim();
+        }
+      } catch {
+        /* script aún no listo: reintento en el mismo envío */
+      }
+    }
+    return undefined;
+  }, [executeRecaptcha]);
+
+  return <SignInForm getCaptchaToken={getCaptchaToken} />;
+};
+
+const SignIn: React.FC = () => {
+  if (!RECAPTCHA_SITE_KEY) {
+    return <SignInForm showRecaptchaWarning />;
+  }
+  return <SignInWithRecaptcha />;
 };
 
 export default SignIn;

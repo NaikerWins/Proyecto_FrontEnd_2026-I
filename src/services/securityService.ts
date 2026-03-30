@@ -1,19 +1,25 @@
 // src/services/securityService.ts
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { User } from "../models/User";
 import { store } from "../store/store";
 import { setUser } from "../store/userSlice";
+import { mergeUserRoleFromToken, type JwtRoleClaims } from "../utils/sessionRole";
 import FirebaseService, { auth } from "./firebaseService";
 import { UserCredential } from "firebase/auth";
 
 class SecurityService extends EventTarget {
     keySession: string;
     API_URL: string;
-    
+    pending2FAEmailKey: string;
+    pending2FAContextKey: string;
+
     constructor() {
         super();
-        this.keySession = 'session';
+        this.keySession = "token";
         this.API_URL = import.meta.env.VITE_API_URL || "http://localhost:8081";
+        this.pending2FAEmailKey = "pending_2fa_email";
+        this.pending2FAContextKey = "pending_2fa_context";
     }
 
     async loginWithGitHub() {
@@ -165,141 +171,411 @@ class SecurityService extends EventTarget {
     }
 
     private saveUserSession(userData: any, token: string) {
-        localStorage.setItem("user", JSON.stringify(userData));
-        store.dispatch(setUser(userData));
-        
+        const merged =
+            mergeUserRoleFromToken(userData as User, token) || userData;
+        localStorage.setItem("user", JSON.stringify(merged));
+        store.dispatch(setUser(merged as User));
         if (token) {
             localStorage.setItem(this.keySession, token);
-            console.log("🔑 Token guardado");
         }
-        
-        this.dispatchEvent(new CustomEvent("userChange", { detail: userData }));
-        console.log("💾 Sesión guardada exitosamente");
+        this.dispatchEvent(new CustomEvent("userChange", { detail: merged }));
+    }
+
+    private clearPending2FAClientOnly(): void {
+        sessionStorage.removeItem(this.pending2FAEmailKey);
+        sessionStorage.removeItem(this.pending2FAContextKey);
+    }
+
+    async cancelPending2FAOnServer(email: string): Promise<void> {
+        const e = (email || "").trim();
+        if (!e) {
+            this.clearPending2FAClientOnly();
+            return;
+        }
+        try {
+            await axios.post(
+                `${this.API_URL}/security/cancel-pending-2fa`,
+                { email: e },
+                { timeout: 8000, headers: { "Content-Type": "application/json" } }
+            );
+        } catch {
+            /* ignore */
+        } finally {
+            this.clearPending2FAClientOnly();
+        }
+    }
+
+    invalidatePartial2FASessionOnUnload(email: string | undefined): void {
+        const e = (email || "").trim();
+        if (!e) {
+            this.clearPending2FAClientOnly();
+            return;
+        }
+        const url = `${this.API_URL}/security/cancel-pending-2fa`;
+        const body = JSON.stringify({ email: e });
+        try {
+            if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+                navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
+            } else {
+                void fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body,
+                    keepalive: true,
+                });
+            }
+        } catch {
+            /* ignore */
+        }
+        this.clearPending2FAClientOnly();
+    }
+
+    async resend2FACode(email: string): Promise<void> {
+        const e = (email || "").trim();
+        if (!e) throw new Error("No hay correo para reenviar el código.");
+        await axios.post(
+            `${this.API_URL}/security/resend-2fa`,
+            { email: e },
+            { timeout: 10000, headers: { "Content-Type": "application/json" } }
+        );
+    }
+
+    private normalizeEmailField(value: unknown): string {
+        if (value == null) return "";
+        if (typeof value === "string") return value.trim();
+        return String(value).trim();
+    }
+
+    /**
+     * Algunos proxies o gateways envuelven el JSON en `data` / `payload` / `body`.
+     */
+    private unwrapApiBody(raw: unknown): Record<string, unknown> {
+        if (raw == null) return {};
+        if (Array.isArray(raw) && raw[0] && typeof raw[0] === "object") {
+            return this.unwrapApiBody(raw[0]);
+        }
+        if (typeof raw !== "object") return {};
+        const o = raw as Record<string, unknown>;
+        const inner = o.data ?? o.payload ?? o.result ?? o.body;
+        if (inner && typeof inner === "object" && !Array.isArray(inner)) {
+            return { ...o, ...(inner as Record<string, unknown>) };
+        }
+        return o;
+    }
+
+    private messageImplies2FAPending(data: Record<string, unknown>): boolean {
+        const m = String(data.message ?? "").toLowerCase();
+        /** Texto típico del backend al enviar el código 2FA (evita falsos positivos en mensajes de error). */
+        return (
+            m.includes("se ha enviado") ||
+            m.includes("enviado un código") ||
+            m.includes("enviado un codigo") ||
+            m.includes("código a su correo") ||
+            m.includes("codigo a su correo")
+        );
+    }
+
+    private resolvePending2FAEmail(
+        data: Record<string, unknown>,
+        user: User,
+        submittedEmail: string,
+    ): string {
+        const fromData =
+            this.normalizeEmailField(data.email) ||
+            this.normalizeEmailField(data.correo) ||
+            this.normalizeEmailField(
+                (data.user as { email?: unknown } | undefined)?.email,
+            );
+        return (
+            fromData ||
+            this.normalizeEmailField(user.email) ||
+            submittedEmail
+        );
+    }
+
+    private isVerify2FAResponse(data: Record<string, unknown>): boolean {
+        const s = String(data.status ?? "").toUpperCase();
+        return (
+            s === "VERIFY_2FA" ||
+            s.includes("VERIFY_2FA") ||
+            data.needsVerification === true ||
+            this.messageImplies2FAPending(data)
+        );
     }
 
     async login(user: User) {
         const loginUrl = `${this.API_URL}/security/login`;
-        console.log("🔐 Intentando login en:", loginUrl);
-        
+
+        const u = user as Record<string, unknown>;
+        const loginBody: Record<string, unknown> = {
+            ...user,
+            email: this.normalizeEmailField(user.email) || this.normalizeEmailField(u.correo),
+            password: user.password,
+            ...(user.captchaToken != null ? { captchaToken: user.captchaToken } : {}),
+        };
+        const submittedEmail = this.normalizeEmailField(loginBody.email);
+
         try {
-            const response = await axios.post(loginUrl, user, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            const response = await axios.post(loginUrl, loginBody, {
+                headers: { "Content-Type": "application/json" },
+                withCredentials: true,
                 timeout: 10000,
             });
 
             const data = response.data;
-            console.log("✅ Respuesta del servidor:", data);
-            
-            if (!data) {
-                throw new Error("No se recibió respuesta del servidor");
+            if (data == null) throw new Error("No se recibió respuesta del servidor");
+
+            const dataObj = this.unwrapApiBody(data);
+            const tokenRaw = dataObj.token ?? dataObj.accessToken;
+            const hasToken =
+                typeof tokenRaw === "string" && tokenRaw.trim().length > 0;
+
+            /**
+             * Sin JWT en el cuerpo ⇒ paso 1 de 2FA (o login incompleto).
+             * No exigir `!data.user`: algunas respuestas traen `user` vacío/parcial y rompían la detección.
+             */
+            if (!hasToken) {
+                const pendingEmail = this.resolvePending2FAEmail(
+                    dataObj,
+                    user,
+                    submittedEmail,
+                );
+                const treatAs2FA =
+                    this.isVerify2FAResponse(dataObj) ||
+                    String(dataObj.status ?? "").toUpperCase() === "VERIFY_2FA";
+                if (treatAs2FA) {
+                    const emailToStore =
+                        pendingEmail ||
+                        submittedEmail ||
+                        this.normalizeEmailField(user.email);
+                    if (!emailToStore) {
+                        throw new Error(
+                            "No se recibió un token de sesión válido del servidor.",
+                        );
+                    }
+                    sessionStorage.setItem(this.pending2FAEmailKey, emailToStore);
+                    sessionStorage.setItem(
+                        this.pending2FAContextKey,
+                        JSON.stringify({
+                            ...dataObj,
+                            tempToken: dataObj.tempToken,
+                        }),
+                    );
+                    return {
+                        ...(dataObj as object),
+                        status: "VERIFY_2FA",
+                        needsVerification: true,
+                        email: emailToStore,
+                    } as Record<string, unknown> & {
+                        status: string;
+                        email: string;
+                        needsVerification: boolean;
+                    };
+                }
+                throw new Error(
+                    "El servidor no devolvió token ni correo para continuar. Revisa la respuesta de /security/login.",
+                );
             }
 
-            // Guardar usuario en localStorage y Redux
-            const userData = data.user || data;
+            const jwt =
+                typeof tokenRaw === "string" && tokenRaw.trim()
+                    ? tokenRaw.trim()
+                    : "";
+            const rawUser = dataObj.user || dataObj;
+            const userData =
+                jwt && rawUser
+                    ? mergeUserRoleFromToken(rawUser as User, jwt) || rawUser
+                    : rawUser;
+
             localStorage.setItem("user", JSON.stringify(userData));
-            store.dispatch(setUser(userData));
-            
-            // Guardar token si existe
-            if (data.token) {
-                localStorage.setItem(this.keySession, data.token);
-                console.log("🔑 Token guardado");
+            if (jwt) {
+                localStorage.setItem(this.keySession, jwt);
             }
-            
-            
+            store.dispatch(setUser(userData as User));
             this.dispatchEvent(new CustomEvent("userChange", { detail: userData }));
-            
-            console.log("🎉 Login completado exitosamente");
-            return data;
-            
+            return { ...dataObj, token: jwt } as typeof dataObj & { token: string };
         } catch (error: any) {
-            console.error('❌ Error durante el login:', error);
-            
             let errorMessage = "Error de conexión";
-            
-            if (error.code === 'ECONNABORTED') {
+            const status = error.response?.status as number | undefined;
+
+            if (error.code === "ECONNABORTED") {
                 errorMessage = "Timeout: El servidor no respondió a tiempo";
             } else if (error.response) {
-                const status = error.response.status;
-                const message = error.response.data?.message;
-                
-                if (status === 401) {
-                    errorMessage = "Credenciales incorrectas";
-                } else if (status === 404) {
-                    errorMessage = "Usuario no encontrado";
+                if (status === 403) {
+                    const data = error.response?.data as
+                        | { message?: string; error?: string }
+                        | undefined;
+                    const msg = data?.message;
+                    const captchaErr =
+                        data?.error === "CAPTCHA_FAILED" ||
+                        data?.error === "CAPTCHA_INVALIDO";
+                    if (captchaErr) {
+                        errorMessage =
+                            msg ||
+                            "reCAPTCHA no validó: use la misma pareja de claves (VITE_RECAPTCHA_SITE_KEY + google.recaptcha.secret), añada el origen del front en reCAPTCHA y recargue.";
+                    } else {
+                        errorMessage = msg || "Acceso denegado por seguridad.";
+                    }
+                } else if (status === 401 || status === 404) {
+                    errorMessage = "Email o contraseña incorrectos";
                 } else if (status === 500) {
                     errorMessage = "Error interno del servidor";
                 } else {
-                    errorMessage = message || `Error ${status}`;
+                    errorMessage = error.response.data?.message || `Error ${status}`;
                 }
             } else if (error.request) {
-                errorMessage = "No se pudo conectar al servidor. Verifica tu conexión.";
+                errorMessage = "No se pudo conectar al servidor.";
             } else {
                 errorMessage = error.message || "Error inesperado";
             }
-            
-            throw new Error(errorMessage);
+
+            const err = new Error(errorMessage) as Error & { status?: number };
+            if (status !== undefined) err.status = status;
+            throw err;
         }
+    }
+
+    async verify2FA(email: string, code: string) {
+        const verifyUrl = `${this.API_URL}/security/verify-2fa`;
+        const resolvedEmail = (
+            email ||
+            sessionStorage.getItem(this.pending2FAEmailKey) ||
+            ""
+        ).trim();
+        const normalizedCode = (code || "").trim();
+
+        if (!resolvedEmail) {
+            throw new Error("No se encontró el correo para validar el código.");
+        }
+        if (normalizedCode.length !== 6) {
+            throw new Error("El código debe tener 6 dígitos.");
+        }
+
+        let response;
+        try {
+            response = await axios.post(
+                verifyUrl,
+                {
+                    email: resolvedEmail,
+                    correo: resolvedEmail,
+                    code: normalizedCode,
+                    verificationCode: normalizedCode,
+                    twoFactorCode: normalizedCode,
+                },
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
+                    timeout: 10000,
+                }
+            );
+        } catch (e: any) {
+            const d = e?.response?.data as
+                | { message?: string; error?: string }
+                | undefined;
+            const msg =
+                (typeof d?.message === "string" && d.message.trim() !== ""
+                    ? d.message
+                    : null) ||
+                (typeof d?.error === "string" ? d.error : null) ||
+                (typeof e?.message === "string" &&
+                !e.message.startsWith("Request failed with status code")
+                    ? e.message
+                    : null) ||
+                "Código incorrecto o vencido.";
+            throw new Error(msg);
+        }
+
+        const data = response.data;
+        if (data.token) {
+            let userToSave: User | undefined = data.user;
+            if (!userToSave) {
+                try {
+                    const claims = jwtDecode<JwtRoleClaims>(data.token);
+                    userToSave = {
+                        id: claims.id ?? claims.sub,
+                        email: claims.email,
+                        name: claims.name,
+                        role: claims.role ?? claims.roleName,
+                    } as User;
+                } catch {
+                    /* ignore */
+                }
+            }
+            if (userToSave) {
+                this.saveUserSession(userToSave, data.token);
+            }
+            sessionStorage.removeItem(this.pending2FAEmailKey);
+            sessionStorage.removeItem(this.pending2FAContextKey);
+        }
+        return data;
     }
 
 
     async loginWithGoogle(googleData: any) {
-        console.log("🔐 Iniciando sesión con Google:", googleData);
-        
+        const googleLoginUrl = `${this.API_URL}/security/login/google`;
         try {
-
-            try {
-                const googleLoginUrl = `${this.API_URL}/security/login/google`;
-                console.log("🌐 Intentando endpoint Google:", googleLoginUrl);
-                
-                const response = await axios.post(googleLoginUrl, {
+            const response = await axios.post(
+                googleLoginUrl,
+                {
                     token: googleData.credential || googleData.tokenId,
                     email: googleData.email,
                     name: googleData.name,
                     picture: googleData.picture,
-                    googleId: googleData.sub
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    timeout: 10000,
-                });
-
-                console.log("✅ Respuesta del backend Google OAuth:", response.data);
-
-                const data = response.data;
-                
-                const userData = data.user || data;
-                localStorage.setItem("user", JSON.stringify(userData));
-                store.dispatch(setUser(userData));
-                if (data.token) {
-                    localStorage.setItem(this.keySession, data.token);
-                    console.log("🔑 Token de Google guardado");
+                    googleId: googleData.sub,
+                },
+                {
+                    headers: { "Content-Type": "application/json" },
+                    timeout: 15000,
                 }
-                
+            );
 
-                this.dispatchEvent(new CustomEvent("userChange", { detail: userData }));
-                
-                console.log("🎉 Login con Google completado exitosamente");
-                return data;
-                
-            } catch (googleError: any) {
-                console.log("⚠️ Endpoint Google no disponible, intentando método alternativo...");
-                
+            const data = response.data;
+            if (!data || typeof data !== "object") {
+                throw new Error("Respuesta inválida del servidor.");
+            }
+            if ("error" in data && data.error) {
+                throw new Error(
+                    (data as { message?: string }).message ||
+                        String((data as { error?: string }).error)
+                );
+            }
+            if (!data.token) {
+                throw new Error(
+                    "El servidor no devolvió token JWT. Revise /security/login/google y los logs del backend."
+                );
+            }
+
+            const userData = data.user || data;
+            this.saveUserSession(userData, data.token);
+            return data;
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response) {
+                const status = err.response.status;
+                const d = err.response.data as
+                    | { message?: string; error?: string }
+                    | undefined;
+                const msg =
+                    d?.message ||
+                    d?.error ||
+                    (status === 401
+                        ? "Google no pudo validarse: verifique que google.client.id en el backend sea el mismo Client ID OAuth que VITE_GOOGLE_CLIENT_ID en el front."
+                        : `Error ${status}`);
+                if (status >= 400 && status < 500) {
+                    throw new Error(msg);
+                }
+                if (status >= 500) {
+                    throw new Error(d?.message || "Error del servidor al validar Google.");
+                }
+            }
+            if (axios.isAxiosError(err) && err.code === "ECONNABORTED") {
+                throw new Error("Tiempo de espera agotado al contactar el servidor.");
+            }
+            if (axios.isAxiosError(err) && err.request && !err.response) {
                 return await this.handleGoogleFallback(googleData);
             }
-
-        } catch (error: any) {
-            console.error("❌ Error en login con Google:", error);
-            
-            let errorMessage = "Error al autenticar con Google";
-            
-            if (error.response) {
-                errorMessage = error.response.data?.message || errorMessage;
-            }
-            
-            throw new Error(errorMessage);
+            throw err instanceof Error
+                ? err
+                : new Error("Error al autenticar con Google.");
         }
     }
 
@@ -370,6 +646,49 @@ class SecurityService extends EventTarget {
         }
     }
     
+    async requestPasswordReset(email: string, captchaToken?: string) {
+        const url = `${this.API_URL}/security/forgot-password`;
+        const body: Record<string, string> = { email: String(email).trim() };
+        if (captchaToken != null && String(captchaToken).trim() !== "") {
+            body.captchaToken = String(captchaToken).trim();
+        }
+        try {
+            const response = await axios.post(url, body, {
+                headers: { "Content-Type": "application/json" },
+                timeout: 15000,
+            });
+            return response.data as { message?: string };
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response?.data) {
+                const d = err.response.data as { message?: string };
+                if (d.message) throw new Error(d.message);
+            }
+            throw err instanceof Error
+                ? err
+                : new Error("No se pudo enviar la solicitud de recuperación.");
+        }
+    }
+
+    async resetPasswordWithToken(token: string, newPassword: string) {
+        const url = `${this.API_URL}/security/reset-password`;
+        try {
+            const response = await axios.post(
+                url,
+                { token: token.trim(), newPassword },
+                { headers: { "Content-Type": "application/json" }, timeout: 15000 },
+            );
+            return response.data as { message?: string };
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response?.data) {
+                const d = err.response.data as { message?: string };
+                if (d.message) throw new Error(d.message);
+            }
+            throw err instanceof Error
+                ? err
+                : new Error("No se pudo restablecer la contraseña.");
+        }
+    }
+
     getUser() {
         const userStr = localStorage.getItem("user");
         return userStr ? JSON.parse(userStr) : null;
@@ -378,20 +697,36 @@ class SecurityService extends EventTarget {
     logout() {
         localStorage.removeItem("user");
         localStorage.removeItem(this.keySession);
+        localStorage.removeItem("session");
         store.dispatch(setUser(null));
         this.dispatchEvent(new CustomEvent("userChange", { detail: null }));
         console.log("👋 Logout completado");
     }
 
-    isAuthenticated() {
-        const hasUser = !!localStorage.getItem("user");
-        const hasToken = !!localStorage.getItem(this.keySession);
-        console.log(`🔍 Autenticación: User=${hasUser}, Token=${hasToken}`);
-        return hasUser || hasToken;
+    /**
+     * JWT en localStorage: clave principal {@link #keySession} o {@code session} (p. ej. complete-profile).
+     */
+    getToken() {
+        const t =
+            localStorage.getItem(this.keySession) ||
+            localStorage.getItem("session");
+        return t?.trim() ? t.trim() : null;
     }
 
-    getToken() {
-        return localStorage.getItem(this.keySession);
+    /**
+     * Rutas protegidas (incl. administración): exige usuario y token; evita acceso directo solo con uno de los dos.
+     */
+    isAuthenticated() {
+        const userRaw = localStorage.getItem("user");
+        if (!userRaw?.trim()) {
+            return false;
+        }
+        try {
+            JSON.parse(userRaw);
+        } catch {
+            return false;
+        }
+        return this.getToken() != null;
     }
 
 

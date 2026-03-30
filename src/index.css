@@ -31,6 +31,18 @@
   }
 }
 
+/* reCAPTCHA v3: badge nativo de Google (se oculta si mostramos aviso equivalente en esquina) */
+.grecaptcha-badge {
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+body.recaptcha-custom-legal .grecaptcha-badge {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* third-party libraries CSS */
 
 .tableCheckbox:checked ~ div span {
