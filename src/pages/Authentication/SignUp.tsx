@@ -190,9 +190,6 @@ const SignUp: React.FC = () => {
               >
                 {passwordChecks.hasSpecial ? '✔' : '✖'} Un carácter especial
               </p>
-
-              <p className="text-green-600">Test verde</p>
-              <p className="text-red-600">Test rojo</p>
               <p
                 className={
                   passwordChecks.minLength ? 'text-green-600' : 'text-gray-500'

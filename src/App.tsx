@@ -56,9 +56,7 @@ function App() {
         <Route
           path="/auth/signup"
           element={
-            <AdministrationGuard>
               <SignUp />
-            </AdministrationGuard>
           }
         />
         <Route path="/auth/complete-profile" element={<CompleteProfile />} />

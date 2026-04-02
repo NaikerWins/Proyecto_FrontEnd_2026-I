@@ -545,10 +545,24 @@ const SignInForm: React.FC<SignInFormProps> = ({
                     : 'Continuar con Microsoft'}
                 </Button>
               </Box>
+              <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="textSecondary">
+              ¿No tienes una cuenta?{' '}
+              <Button
+                color="primary"
+                onClick={() => navigate('/auth/signup')}
+                sx={{ textTransform: 'none' }}
+                disabled={loading || !!providerLoading}
+              >
+                Regístrate aquí
+              </Button>
+            </Typography>
+          </Box>
             </Paper>
           </Container>
         </Box>
       </Box>
+
 
       {getCaptchaToken ? <RecaptchaLegalCorner /> : null}
     </>
