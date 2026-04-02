@@ -307,12 +307,15 @@ class SecurityService extends EventTarget {
         const loginUrl = `${this.API_URL}/security/login`;
 
         const u = user as Record<string, unknown>;
+        const captcha = String(u.captchaToken ?? "").trim();
         const loginBody: Record<string, unknown> = {
             ...user,
             email: this.normalizeEmailField(user.email) || this.normalizeEmailField(u.correo),
             password: user.password,
-            ...(user.captchaToken != null ? { captchaToken: user.captchaToken } : {}),
         };
+        if (captcha) {
+            loginBody.captchaToken = captcha;
+        }
         const submittedEmail = this.normalizeEmailField(loginBody.email);
 
         try {
@@ -423,8 +426,16 @@ class SecurityService extends EventTarget {
                 } else {
                     errorMessage = error.response.data?.message || `Error ${status}`;
                 }
-            } else if (error.request) {
-                errorMessage = "No se pudo conectar al servidor.";
+            } else if (
+                error.code === "ERR_NETWORK" ||
+                error.code === "ECONNREFUSED" ||
+                error.request
+            ) {
+                /** Sin respuesta HTTP: servidor apagado, puerto distinto o firewall (p. ej. net::ERR_CONNECTION_REFUSED). */
+                errorMessage =
+                    `No hay conexión con la API en ${this.API_URL}. ` +
+                    "Inicia el microservicio de seguridad (Spring Boot) en ese puerto, por ejemplo desde la carpeta del backend: " +
+                    "`./mvnw spring-boot:run` o `mvn spring-boot:run`.";
             } else {
                 errorMessage = error.message || "Error inesperado";
             }

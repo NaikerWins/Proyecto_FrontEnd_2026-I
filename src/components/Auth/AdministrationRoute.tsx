@@ -1,45 +1,13 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../store/store';
-import { hasAdministrationAccess } from '../../constants/privilegedRoles';
-import SecurityService from '../../services/securityService';
-import { SESSION_INVALID_MESSAGE } from '../../constants/authMessages';
+import { Outlet } from 'react-router-dom';
+import AdministrationGuard from './AdministrationGuard';
 
 /**
- * Solo Administrador Sistema, Administrador Empresa y Supervisor.
- * El resto se redirige al dashboard (inicio).
- * Requiere sesión completa (usuario + JWT), no solo estado en Redux.
+ * Rutas anidadas (usuarios, roles, permisos, etc.) solo para los tres roles de administración.
  */
-const AdministrationRoute = () => {
-  const userFromStore = useSelector((s: RootState) => s.user.user);
-  const location = useLocation();
-
-  if (!SecurityService.isAuthenticated()) {
-    return (
-      <Navigate
-        to="/auth/signin"
-        replace
-        state={{ message: SESSION_INVALID_MESSAGE }}
-      />
-    );
-  }
-
-  const user = userFromStore ?? SecurityService.getUser();
-  if (!user) {
-    return (
-      <Navigate
-        to="/auth/signin"
-        replace
-        state={{ message: SESSION_INVALID_MESSAGE }}
-      />
-    );
-  }
-
-  if (!hasAdministrationAccess(user.role)) {
-    return <Navigate to="/" replace state={{ from: location }} />;
-  }
-
-  return <Outlet />;
-};
+const AdministrationRoute = () => (
+  <AdministrationGuard>
+    <Outlet />
+  </AdministrationGuard>
+);
 
 export default AdministrationRoute;

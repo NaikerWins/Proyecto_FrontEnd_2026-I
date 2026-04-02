@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Link as RouterLink } from 'react-router-dom';
@@ -17,6 +17,7 @@ import {
 import Breadcrumb from '../../components/Breadcrumb';
 import SecurityService from '../../services/securityService';
 import RecaptchaLegalCorner from '../../components/Auth/RecaptchaLegalCorner';
+import { obtainRecaptchaToken } from '../../utils/obtainRecaptchaToken';
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
@@ -168,33 +169,23 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
   );
 };
 
-const RECAPTCHA_RETRIES = 20;
-const RECAPTCHA_RETRY_MS = 200;
-
 /**
- * reCAPTCHA v3 invisible: executeRecaptcha solo al enviar el formulario (acción
- * {@code forgot_password}).
+ * reCAPTCHA v3 al enviar; ref para no usar `executeRecaptcha` obsoleto del primer render.
  */
 const ForgotPasswordWithRecaptcha: React.FC = () => {
   const { executeRecaptcha } = useGoogleReCaptcha();
+  const executeRef = useRef(executeRecaptcha);
+  executeRef.current = executeRecaptcha;
 
-  const getCaptchaToken = useCallback(async (): Promise<string | undefined> => {
-    for (let attempt = 0; attempt < RECAPTCHA_RETRIES; attempt++) {
-      if (attempt > 0) {
-        await new Promise((r) => setTimeout(r, RECAPTCHA_RETRY_MS));
-      }
-      try {
-        if (!executeRecaptcha) continue;
-        const t = await executeRecaptcha('forgot_password');
-        if (t && String(t).trim()) {
-          return t.trim();
-        }
-      } catch {
-        /* script aún no listo: reintento en el mismo envío */
-      }
-    }
-    return undefined;
-  }, [executeRecaptcha]);
+  const getCaptchaToken = useCallback(
+    () =>
+      obtainRecaptchaToken(
+        () => executeRef.current,
+        'forgot_password',
+        RECAPTCHA_SITE_KEY,
+      ),
+    [],
+  );
 
   return <ForgotPasswordForm getCaptchaToken={getCaptchaToken} />;
 };

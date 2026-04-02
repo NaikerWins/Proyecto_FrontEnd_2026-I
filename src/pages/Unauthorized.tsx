@@ -4,26 +4,30 @@ import { useState } from "react";
 import {
   ACCESS_DENIED_MESSAGE,
   ACCESS_DENIED_STORAGE_KEY,
+  FORBIDDEN_PAGE_TITLE,
 } from "../constants/authMessages";
 
 const Unauthorized = () => {
   const navigate = useNavigate();
-  const [apiMessage] = useState(() => {
+  const [detailMessage] = useState(() => {
     const key = ACCESS_DENIED_STORAGE_KEY;
     const v = sessionStorage.getItem(key);
     if (v) sessionStorage.removeItem(key);
     return v || undefined;
   });
-  const headline = apiMessage || ACCESS_DENIED_MESSAGE;
 
   return (
     <Container maxWidth="sm">
       <Box sx={{ py: 8, textAlign: "center" }}>
         <Alert severity="error" sx={{ mb: 2, textAlign: "left" }}>
-          <Typography variant="subtitle2" component="div" fontWeight={600} gutterBottom>
-            Error 403
+          <Typography variant="subtitle1" component="div" fontWeight={600} gutterBottom>
+            {FORBIDDEN_PAGE_TITLE}
           </Typography>
-          <Typography variant="body2">{headline}</Typography>
+          {detailMessage && detailMessage !== ACCESS_DENIED_MESSAGE && (
+            <Typography variant="body2" color="text.secondary">
+              {detailMessage}
+            </Typography>
+          )}
         </Alert>
         <Typography color="text.secondary" sx={{ mb: 3 }}>
           No tiene permisos para acceder a este recurso.

@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { User } from '../../models/User';
 import SecurityService from '../../services/securityService';
-import Breadcrumb from '../../components/Breadcrumb';
+//import Breadcrumb from '../../components/Breadcrumb';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
@@ -27,12 +27,15 @@ import RecaptchaLegalCorner from '../../components/Auth/RecaptchaLegalCorner';
 import {
   SESSION_INVALID_STORAGE_KEY,
 } from '../../constants/authMessages';
+import { obtainRecaptchaToken } from '../../utils/obtainRecaptchaToken';
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
+const LOGIN_BUS_IMAGE = '/images/auth/prueba.png';
+
 type SignInFormProps = {
   getCaptchaToken?: () => Promise<string | undefined>;
-  /** Sin VITE_RECAPTCHA_SITE_KEY el login fallará si el back exige captcha */
+
   showRecaptchaWarning?: boolean;
 };
 
@@ -79,9 +82,17 @@ const SignInForm: React.FC<SignInFormProps> = ({
     try {
       // reCAPTCHA v3 invisible: executeRecaptcha solo al enviar el formulario (sin interacción previa con el widget).
       let captchaToken: string | undefined;
-      if (getCaptchaToken) {
-        captchaToken = await getCaptchaToken();
-      }
+    if (getCaptchaToken) {
+      captchaToken = await getCaptchaToken();
+    }
+
+    if (!captchaToken) {
+      setError(
+        'No se pudo validar reCAPTCHA. Comprueba la conexión, desactiva bloqueadores en esta página y que la clave de sitio sea reCAPTCHA v3. Luego intenta de nuevo.',
+      );
+      setLoading(false);
+      return;
+    }
 
       const response = (await SecurityService.login({
         ...user,
@@ -229,10 +240,90 @@ const SignInForm: React.FC<SignInFormProps> = ({
 
   return (
     <>
-      <Breadcrumb pageName="Sign In" />
+      {/*
+        <Breadcrumb pageName="Sign In" />
+        */}
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          bgcolor: '#F1F5F9',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'relative',
+            flex: { md: '1 1 44%' },
+            minHeight: { xs: 200, sm: 240, md: 'auto' },
+            backgroundImage: `url(${LOGIN_BUS_IMAGE})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <Box
+            aria-hidden
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              background:
+                'linear-gradient(145deg, rgba(60, 80, 224, 0.93) 0%, rgba(60, 80, 224, 0.6) 42%, rgba(60, 80, 224, 0.28) 100%)',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'relative',
+              zIndex: 1,
+              height: '100%',
+              minHeight: { xs: 200, sm: 240, md: '100vh' },
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              px: { xs: 3, md: 5 },
+              py: { xs: 3, md: 6 },
+            }}
+          >
+            <Typography
+              variant="h3"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                color: '#fff',
+                fontSize: { xs: '1.65rem', sm: '2rem', md: '2.35rem' },
+                lineHeight: 1.2,
+                mb: 1.5,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Tus Buses
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.92)',
+                fontWeight: 400,
+                maxWidth: 400,
+                fontSize: { xs: '0.95rem', md: '1.05rem' },
+                lineHeight: 1.55,
+              }}
+            >
+              Inicia sesión.
+            </Typography>
+          </Box>
+        </Box>
 
-      <Container maxWidth="sm">
-        <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+        <Box
+          sx={{
+            flex: { md: '1 1 56%' },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            py: { xs: 3, md: 5 },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
+          <Container maxWidth="sm" disableGutters sx={{ maxWidth: { sm: 460 } }}>
+        <Paper elevation={3} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 2 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
             Iniciar Sesión
           </Typography>
@@ -424,54 +515,28 @@ const SignInForm: React.FC<SignInFormProps> = ({
             </Button>
           </Box>
 
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
-            <Typography variant="body2" color="textSecondary">
-              ¿No tienes una cuenta?{' '}
-              <Button
-                color="primary"
-                onClick={() => navigate('/auth/signup')}
-                sx={{ textTransform: 'none' }}
-                disabled={loading || !!providerLoading}
-              >
-                Regístrate aquí
-              </Button>
-            </Typography>
-          </Box>
         </Paper>
-      </Container>
+          </Container>
+        </Box>
+      </Box>
 
       {getCaptchaToken ? <RecaptchaLegalCorner /> : null}
     </>
   );
 };
 
-const RECAPTCHA_RETRIES = 20;
-const RECAPTCHA_RETRY_MS = 200;
-
 /**
- * Requisito: reCAPTCHA v3 se ejecuta automáticamente al enviar el formulario email/contraseña,
- * sin interacción del usuario con el widget (sin checkbox). No se llama a executeRecaptcha al montar la página.
+ * reCAPTCHA v3 al enviar el formulario. Ref + obtainRecaptchaToken evitan token vacío.
  */
 const SignInWithRecaptcha: React.FC = () => {
   const { executeRecaptcha } = useGoogleReCaptcha();
+  const executeRef = useRef(executeRecaptcha);
+  executeRef.current = executeRecaptcha;
 
-  const getCaptchaToken = useCallback(async (): Promise<string | undefined> => {
-    for (let attempt = 0; attempt < RECAPTCHA_RETRIES; attempt++) {
-      if (attempt > 0) {
-        await new Promise((r) => setTimeout(r, RECAPTCHA_RETRY_MS));
-      }
-      try {
-        if (!executeRecaptcha) continue;
-        const t = await executeRecaptcha('login');
-        if (t && String(t).trim()) {
-          return t.trim();
-        }
-      } catch {
-        /* script aún no listo: reintento en el mismo envío */
-      }
-    }
-    return undefined;
-  }, [executeRecaptcha]);
+  const getCaptchaToken = useCallback(
+    () => obtainRecaptchaToken(() => executeRef.current, 'login', RECAPTCHA_SITE_KEY),
+    [],
+  );
 
   return <SignInForm getCaptchaToken={getCaptchaToken} />;
 };

@@ -4,9 +4,7 @@ import ForgotPassword from './ForgotPassword';
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
 /**
- * Google reCAPTCHA v3: se ejecuta de forma automática e invisible al enviar el
- * formulario de recuperación (executeRecaptcha en el submit; sin checkbox).
- * Mismo patrón que SignInPage.
+ * reCAPTCHA v3 estándar (mismo criterio que SignInPage).
  */
 const ForgotPasswordPage = () => {
   if (!RECAPTCHA_SITE_KEY) {
@@ -14,9 +12,14 @@ const ForgotPasswordPage = () => {
   }
   return (
     <GoogleReCaptchaProvider
-      reCaptchaKey={RECAPTCHA_SITE_KEY}
-      language="es"
-      scriptProps={{ async: true, defer: true, appendTo: 'head' }}
+      reCaptchaKey={RECAPTCHA_SITE_KEY.trim()}
+      useEnterprise={false}
+      language="en"
+      scriptProps={{
+        appendTo: 'head',
+        async: true,
+        defer: true,
+      }}
     >
       <ForgotPassword />
     </GoogleReCaptchaProvider>
