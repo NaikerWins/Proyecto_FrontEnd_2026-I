@@ -16,4 +16,8 @@ export interface User {
     picture?: string;
     googleId?: string;    
     googleAccount?: boolean;
+    githubId?: string;     
+    githubAccount?: boolean; 
+    microsoftId?: string;    
+    microsoftAccount?: boolean;
 }

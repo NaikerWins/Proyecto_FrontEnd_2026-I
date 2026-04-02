@@ -28,17 +28,17 @@ const SignIn: React.FC = () => {
   const [providerLoading, setProviderLoading] = useState<string | null>(null);
   const createSession = async (userId: string | number, token: string) => {
     try {
-        const FACode = Math.floor(100000 + Math.random() * 900000).toString();
-        await SessionService.create(userId, {
-            token,
-            FACode,
-            state: 'active',
-            expiration: new Date(Date.now() + 3600 * 1000).toISOString(),
-        });
+      const FACode = Math.floor(100000 + Math.random() * 900000).toString();
+      await SessionService.create(userId, {
+        token,
+        FACode,
+        state: 'active',
+        expiration: new Date(Date.now() + 3600 * 1000).toISOString(),
+      });
     } catch (error) {
-        // Sessions es de otro microservicio — ignorar
+      // Sessions es de otro microservicio — ignorar
     }
-};
+  };
 
   const handleLogin = async (user: User) => {
     setLoading(true);
@@ -68,45 +68,45 @@ const SignIn: React.FC = () => {
     setError('');
 
     try {
-        console.log('🔑 Credencial de Google recibida:', credentialResponse);
+      console.log('🔑 Credencial de Google recibida:', credentialResponse);
 
-        if (!credentialResponse.credential) {
-            throw new Error('No se recibió credencial de Google');
-        }
+      if (!credentialResponse.credential) {
+        throw new Error('No se recibió credencial de Google');
+      }
 
-        // Manda el objeto completo con credential incluida
-        const userData = await SecurityService.loginWithGoogle({
-            credential: credentialResponse.credential,  // ← token original para el backend
-            ...jwtDecode(credentialResponse.credential) // ← datos decodificados para el fallback
-        });
+      // Manda el objeto completo con credential incluida
+      const userData = await SecurityService.loginWithGoogle({
+        credential: credentialResponse.credential, // ← token original para el backend
+        ...jwtDecode(credentialResponse.credential), // ← datos decodificados para el fallback
+      });
 
-        console.log('✅ Login con Google exitoso:', userData);
+      console.log('✅ Login con Google exitoso:', userData);
 
-        // Si es usuario nuevo, pide datos adicionales
-        if (userData.isNewUser) {
-    navigate('/auth/complete-profile', {
-        state: {
+      // Si es usuario nuevo, pide datos adicionales
+      if (userData.isNewUser) {
+        navigate('/auth/complete-profile', {
+          state: {
             user: userData.user,
             token: userData.token,
-            googleCredential: credentialResponse.credential  // ← agrega esto
-        }
-    });
-    return;
-}
+            googleCredential: credentialResponse.credential, // ← agrega esto
+          },
+        });
+        return;
+      }
 
-        await createSession(
-            userData.user?.id || userData.id,
-            credentialResponse.credential,
-        );
+      await createSession(
+        userData.user?.id || userData.id,
+        credentialResponse.credential,
+      );
 
-        navigate('/', { replace: true });
+      navigate('/', { replace: true });
     } catch (error: any) {
-        console.error('❌ Error en login con Google:', error);
-        setError(error.message || 'Error al autenticar con Google.');
+      console.error('❌ Error en login con Google:', error);
+      setError(error.message || 'Error al autenticar con Google.');
     } finally {
-        setProviderLoading(null);
+      setProviderLoading(null);
     }
-};
+  };
 
   const handleGitHubLogin = async () => {
     setProviderLoading('github');
@@ -192,7 +192,7 @@ const SignIn: React.FC = () => {
                 .email('Email inválido')
                 .required('El email es obligatorio'),
               password: Yup.string()
-                .min(6, 'La contraseña debe tener al menos 6 caracteres')
+                .min(8, 'La contraseña debe tener al menos 8 caracteres')
                 .required('La contraseña es obligatoria'),
             })}
             onSubmit={(values) => {
@@ -255,10 +255,13 @@ const SignIn: React.FC = () => {
             </Typography>
           </Divider>
 
+          {/* ---------------------------------------------------------------------------------------------------------------------------------*/}
           {/* Botones de proveedores OAuth */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+              {' '}
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                {' '}
                 <GoogleLogin
                   onSuccess={handleGoogleLogin}
                   onError={handleGoogleError}
@@ -268,8 +271,8 @@ const SignIn: React.FC = () => {
                   shape="rectangular"
                   width="300"
                   locale="es"
-                />
-              </Box>
+                />{' '}
+              </Box>{' '}
             </GoogleOAuthProvider>
 
             <Button
@@ -311,7 +314,11 @@ const SignIn: React.FC = () => {
                 providerLoading === 'microsoft' ? (
                   <CircularProgress size={20} />
                 ) : (
-                  <Microsoft />
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+                    alt="Microsoft"
+                    style={{ width: 20, height: 20 }}
+                  />
                 )
               }
               sx={{
