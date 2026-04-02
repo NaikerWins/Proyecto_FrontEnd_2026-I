@@ -5,6 +5,7 @@ export interface User {
     id?: string;
     name?: string;
     email?: string;
+    role?: string;
     password?: string;
     age?: number;
     phone?: string;
@@ -20,4 +21,6 @@ export interface User {
     githubAccount?: boolean; 
     microsoftId?: string;    
     microsoftAccount?: boolean;
+    captchaToken?: string;
+
 }

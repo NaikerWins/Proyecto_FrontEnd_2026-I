@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import SecurityService from '../../services/securityService';
+import { SESSION_INVALID_MESSAGE } from '../../constants/authMessages';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 
@@ -8,16 +9,9 @@ const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      console.log('🛡️ Verificando autenticación...');
-      const authStatus = SecurityService.isAuthenticated();
-      console.log('🔐 Estado de autenticación:', authStatus);
-
-      setIsAuthenticated(authStatus);
-      setIsChecking(false);
-    };
-
-    checkAuth();
+    const authStatus = SecurityService.isAuthenticated();
+    setIsAuthenticated(authStatus);
+    setIsChecking(false);
   }, []);
 
   if (isChecking) {
@@ -36,9 +30,15 @@ const ProtectedRoute = () => {
     );
   }
 
-  console.log('🎯 Redirigiendo:', isAuthenticated ? 'A la app' : 'Al login');
-
-    return isAuthenticated ? <Outlet /> : <Navigate to="/auth/signin" replace />;
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate
+      to="/auth/signin"
+      replace
+      state={{ message: SESSION_INVALID_MESSAGE }}
+    />
+  );
 };
 
 export default ProtectedRoute;
