@@ -18,7 +18,6 @@ import {
 } from './routes';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdministrationRoute from './components/Auth/AdministrationRoute';
-import AdministrationGuard from './components/Auth/AdministrationGuard';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -53,12 +52,7 @@ function App() {
       />
       <Routes>
         <Route path="/auth/signin" element={<SignInPage />} />
-        <Route
-          path="/auth/signup"
-          element={
-              <SignUp />
-          }
-        />
+        <Route path="/auth/signup" element={<SignUp />}/>
         <Route path="/auth/complete-profile" element={<CompleteProfile />} />
         <Route path="/auth/verify-2fa" element={<Verify2FA />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
@@ -104,7 +98,6 @@ function App() {
       </Routes>
     </>
   );
-
   return loading ? (
     <Loader />
   ) : (
@@ -113,5 +106,4 @@ function App() {
     </GoogleOAuthProvider>
   );
 }
-
 export default App;

@@ -29,7 +29,7 @@ const AdministrationGuard = ({ children }: Props) => {
   if (!user) {
     return (
       <Navigate
-        to="/auth/signin"
+        to="/auth/signup"
         replace
         state={{ message: SESSION_INVALID_MESSAGE }}
       />

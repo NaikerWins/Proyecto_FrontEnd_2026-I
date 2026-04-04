@@ -95,6 +95,14 @@ const ListRoles: React.FC = () => {
         >
           ASIGNAR ROL A USUARIO
         </Button>
+
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => navigate("/user-roles/list")}
+        >
+          LISTA DE USUARIOS Y SUS ROLES
+        </Button>
       </Box>
 
       <GenericTable
