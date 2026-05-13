@@ -134,6 +134,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                   <li>
                     <NavLink
+                        to="/programaciones"
+                        className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                    >
+                        Programaciones
+                    </NavLink>
+                </li>
+                  <li>
+                    <NavLink
                       to="/permission/list"
                       className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                         pathname.includes('permission') &&
@@ -143,6 +153,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       Permissions
                     </NavLink>
                   </li>
+                    <li>
+                    <NavLink
+                        to="/reportes/ingresopormetodo"
+                        className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('reportes') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                    >
+                        Ingresos por Método
+                    </NavLink>
+                  </li>
+                    <li>
+                    <NavLink
+                        to="/reportes/distribucionetaria"
+                        className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('reportes') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                    >
+                        Distribución Etaria
+                    </NavLink>
+                  </li>              
                 </>
             
             </ul>
@@ -246,6 +276,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </>
                 )}
               </SidebarLinkGroup>
+            <li>
+              <NavLink
+                to="/recargas"
+                className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('recargas') && 'bg-graydark dark:bg-meta-4'
+                }`}
+            >
+                Recargar Tarjeta
+              </NavLink>
+              </li>
             </ul>
           </div>
         </nav>

@@ -1,19 +1,14 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
-import { hasAdministrationAccess } from '../../constants/privilegedRoles';
 import SecurityService from '../../services/securityService';
 import { SESSION_INVALID_MESSAGE } from '../../constants/authMessages';
 
 type Props = { children: React.ReactNode };
 
-/**
- * Solo Administrador Sistema, Administrador Empresa y Supervisor.
- * Sin sesión → login; con sesión y otro rol → /unauthorized.
- */
 const AdministrationGuard = ({ children }: Props) => {
   const userFromStore = useSelector((s: RootState) => s.user.user);
-  const location = useLocation();
+  //const location = useLocation();
 
   if (!SecurityService.isAuthenticated()) {
     return (
@@ -36,8 +31,11 @@ const AdministrationGuard = ({ children }: Props) => {
     );
   }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 7729fdcf9b10467195d4aa135fc2d88c043f4a13
   return <>{children}</>;
 };
 

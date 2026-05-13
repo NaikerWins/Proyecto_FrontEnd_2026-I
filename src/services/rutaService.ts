@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import apiNest from "../interceptors/axiosNest";
 import { Ruta } from "../models/Ruta";
 
@@ -20,3 +21,22 @@ export const rutaService = {
     return res.data;
   },
 };
+=======
+import api from "../interceptors/busesInterceptor";
+
+const API_URL = "/rutas";
+
+class RutaService {
+    async getRutas(): Promise<any[]> {
+        try {
+            const response = await api.get(API_URL);
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener rutas:", error);
+            return [];
+        }
+    }
+}
+
+export const rutaService = new RutaService();
+>>>>>>> 7729fdcf9b10467195d4aa135fc2d88c043f4a13
