@@ -39,6 +39,32 @@ const UpdateRole = lazy(() => import('../pages/Roles/Update'));
 const UserRolesList = lazy(() => import('../pages/UserRoles/List'));
 const AssignRole = lazy(() => import('../pages/UserRoles/AssignRole'));
 
+
+const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
+const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
+const ListAddresses = lazy(() => import('../pages/addresses/List'));
+const CreateAddress = lazy(() => import('../pages/addresses/Create'));
+const UpdateAddress = lazy(() => import('../pages/addresses/Update'));
+
+const ListBuses = lazy(() => import('../pages/Buses/list'));
+const CreateBus = lazy(() => import('../pages/Buses/create'));
+const UpdateBus = lazy(() => import('../pages/Buses/update'));
+
+const ListParaderos = lazy(() => import('../pages/Paraderos/list'));
+const CreateParadero = lazy(() => import('../pages/Paraderos/create'));
+const UpdateParadero = lazy(() => import('../pages/Paraderos/update'));
+
+const ListIncidentes = lazy(() => import('../pages/Incidentes/list'));
+const CreateIncidente = lazy(() => import('../pages/Incidentes/create'));
+const DetailIncidente = lazy(() => import('../pages/Incidentes/detail'));
+
+const ListTurnos = lazy(() => import('../pages/Turnos/list'));
+const CreateTurno = lazy(() => import('../pages/Turnos/create'));
+
+const ListRutas = lazy(() => import('../pages/Rutas/list'));
+const CreateRuta = lazy(() => import('../pages/Rutas/create'));
+const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
+
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
 export const administrationRoutes = [
   {
@@ -93,13 +119,78 @@ export const administrationRoutes = [
   },
 ];
 
-const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
-const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
-const ListAddresses = lazy(() => import('../pages/addresses/List'));
-const CreateAddress = lazy(() => import('../pages/addresses/Create'));
-const UpdateAddress = lazy(() => import('../pages/addresses/Update'));
 
 export const generalRoutes = [
+  { 
+    path: '/buses', 
+    title: 'Buses List', 
+    component: ListBuses 
+  },
+  { 
+    path: '/buses/crear', 
+    title: 'Create Bus', 
+    component: CreateBus 
+  },
+  { 
+    path: '/buses/editar/:id', 
+    title: 'Update Bus', 
+    component: UpdateBus 
+  },
+  { 
+    path: '/paraderos', 
+    title: 'Paraderos List', 
+    component: ListParaderos 
+  },
+  { 
+    path: '/paraderos/crear', 
+    title: 'Create Paradero', 
+    component: CreateParadero 
+  },
+  { 
+    path: '/paraderos/editar/:id', 
+    title: 'Update Paradero', 
+    component: UpdateParadero 
+  },
+  { 
+    path: '/incidentes/bus/:busId', 
+    title: 'Incidentes Bus', 
+    component: ListIncidentes 
+  },
+  { 
+    path: '/incidentes/crear/:busId', 
+    title: 'Create Incidente', 
+    component: CreateIncidente 
+  },
+  { 
+    path: '/incidentes/:id', 
+    title: 'Detail Incidente', 
+    component: DetailIncidente 
+  },
+  { 
+    path: '/turnos', 
+    title: 'Turnos List', 
+    component: ListTurnos 
+  },
+  { 
+    path: '/turnos/crear', 
+    title: 'Create Turno', 
+    component: CreateTurno 
+  },
+  { 
+    path: '/rutas', 
+    title: 'Rutas List', 
+    component: ListRutas 
+  },
+  { 
+    path: '/rutas/crear', 
+    title: 'Create Ruta', 
+    component: CreateRuta 
+  },
+  { 
+    path: '/rutas/:id', 
+    title: 'Detail Ruta', 
+    component: DetailRuta 
+  },
   {
     path: '/demo',
     title: 'Demo',
@@ -274,5 +365,78 @@ export const generalRoutes = [
   },
 ];
 
-const routes = [...generalRoutes, ...administrationRoutes];
+export const transporteRoutes = [
+  { 
+    path: '/buses', 
+    title: 'Buses List', 
+    component: ListBuses 
+  },
+  { 
+    path: '/buses/crear', 
+    title: 'Create Bus', 
+    component: CreateBus 
+  },
+  { 
+    path: '/buses/editar/:id', 
+    title: 'Update Bus', 
+    component: UpdateBus 
+  },
+  { 
+    path: '/paraderos', 
+    title: 'Paraderos List', 
+    component: ListParaderos 
+  },
+  { 
+    path: '/paraderos/crear', 
+    title: 'Create Paradero', 
+    component: CreateParadero 
+  },
+  { 
+    path: '/paraderos/editar/:id', 
+    title: 'Update Paradero', 
+    component: UpdateParadero 
+  },
+  { 
+    path: '/incidentes/bus/:busId', 
+    title: 'Incidentes Bus', 
+    component: ListIncidentes 
+  },
+  { 
+    path: '/incidentes/crear/:busId', 
+    title: 'Create Incidente', 
+    component: CreateIncidente 
+  },
+  { 
+    path: '/incidentes/:id', 
+    title: 'Detail Incidente', 
+    component: DetailIncidente 
+  },
+  { 
+    path: '/turnos', 
+    title: 'Turnos List', 
+    component: ListTurnos 
+  },
+  { 
+    path: '/turnos/crear', 
+    title: 'Create Turno', 
+    component: CreateTurno 
+  },
+  { 
+    path: '/rutas', 
+    title: 'Rutas List', 
+    component: ListRutas 
+  },
+  { 
+    path: '/rutas/crear', 
+    title: 'Create Ruta', 
+    component: CreateRuta 
+  },
+  { 
+    path: '/rutas/:id', 
+    title: 'Detail Ruta', 
+    component: DetailRuta 
+  },
+];
+
+const routes = [...generalRoutes, ...administrationRoutes, ...transporteRoutes];
 export default routes;

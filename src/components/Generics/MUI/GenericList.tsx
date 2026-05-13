@@ -27,6 +27,7 @@ interface GenericTableProps {
   data: Record<string, any>[];
   columns: string[];
   actions: Action[];
+  columnNames?: Record<string, string>;
   onAction: (name: string, item: Record<string, any>) => void;
   title?: string;
 }
@@ -34,6 +35,7 @@ interface GenericTableProps {
 const GenericTable: React.FC<GenericTableProps> = ({ 
   data, 
   columns, 
+  columnNames,
   actions, 
   onAction,
   title 
@@ -64,7 +66,8 @@ const GenericTable: React.FC<GenericTableProps> = ({
                   align="center" 
                   sx={{ fontWeight: 'bold', color: 'white' }}
                 >
-                  {col.toUpperCase()}
+                  {/* {col.toUpperCase()} */}
+                  {columnNames?.[col] || col.toUpperCase()}
                 </TableCell>
               ))}
               <TableCell 

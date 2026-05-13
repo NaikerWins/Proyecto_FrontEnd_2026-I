@@ -4,4 +4,5 @@ export interface Role {
   description?: string;
   created_at?: string;  
   updated_at?: string; 
+  isActive?: boolean;
 }
