@@ -36,15 +36,7 @@ const AdministrationGuard = ({ children }: Props) => {
     );
   }
 
-  if (!hasAdministrationAccess(user.role)) {
-    return (
-      <Navigate
-        to="/unauthorized"
-        replace
-        state={{ from: location, reason: 'administration' }}
-      />
-    );
-  }
+
 
   return <>{children}</>;
 };

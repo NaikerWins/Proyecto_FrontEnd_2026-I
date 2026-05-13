@@ -11,6 +11,12 @@ import Verify2FA from './components/Auth/Verify2FA';
 import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPassword from './pages/Authentication/ResetPassword';
 import Unauthorized from './pages/Unauthorized';
+import RutasList from "./pages/Rutas/List";
+import RutaParaderos from "./pages/Rutas/Paraderos";
+import ParaderosCercanos from "./pages/Paraderos/Cercanos";
+import Abordaje from "./pages/Boletos/Abordaje";
+import Descenso from "./pages/Boletos/Descenso";
+import Historial from "./pages/Boletos/Historial";
 import Loader from './common/Loader';
 import {
   administrationRoutes,
@@ -53,6 +59,12 @@ function App() {
       <Routes>
         <Route path="/auth/signin" element={<SignInPage />} />
         <Route path="/auth/signup" element={<SignUp />}/>
+        <Route path="/rutas" element={<RutasList />} />
+        <Route path="/rutas/:id/paraderos" element={<RutaParaderos />} />
+        <Route path="/paraderos/cercanos" element={<ParaderosCercanos />} />
+        <Route path="/boletos/abordaje" element={<Abordaje />} />
+        <Route path="/boletos/descenso" element={<Descenso />} />
+        <Route path="/boletos/historial" element={<Historial />} />
         <Route path="/auth/complete-profile" element={<CompleteProfile />} />
         <Route path="/auth/verify-2fa" element={<Verify2FA />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />

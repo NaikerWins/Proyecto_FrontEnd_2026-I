@@ -7,6 +7,7 @@ const API_URL = "/users";
 class UserService {
     async getUsers(): Promise<User[]> {
         try {
+            console.log("intentando api de get users")
             const response = await api.get(API_URL);
             return response.data;
         } catch (error) {
