@@ -43,6 +43,7 @@ const UserRolesList: React.FC = () => {
       setLoading(true);
       
       const users = await userService.getUsers();
+      console.log("intento listar")
       const usersWithRolesData: UserWithRoles[] = [];
       
       for (const user of users) {

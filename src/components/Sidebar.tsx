@@ -4,7 +4,7 @@ import SidebarLinkGroup from './SidebarLinkGroup';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
-import { hasAdministrationAccess } from '../constants/privilegedRoles';
+
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -15,7 +15,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
   const user = useSelector((s: RootState) => s.user.user);
-  const showAdminMenu = hasAdministrationAccess(user?.role);
+
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -101,14 +101,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
           {/* MENU */}
           <div>
-            {showAdminMenu && (
+            
               <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
                 MENU
               </h3>
-            )}
+            
 
             <ul className="mb-6 flex flex-col gap-1.5">
-              {showAdminMenu && (
+                
                 <>
                   <li>
                     <NavLink
@@ -174,7 +174,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </NavLink>
                   </li>              
                 </>
-              )}
+            
             </ul>
           </div>
 
@@ -241,7 +241,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             Sign In
                           </NavLink>
                         </li>
-                        {showAdminMenu && (
+                        
                           <li>
                             <NavLink
                               to="/auth/signup"
@@ -253,7 +253,24 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Sign Up
                             </NavLink>
                           </li>
-                        )}
+                          // Dentro del sidebar, agrega esta sección
+                                      {/* Planificación de Viajes */}
+                            <li>
+                              <NavLink to="/rutas">Rutas disponibles</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/paraderos/cercanos"> Paraderos cercanos</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/boletos/abordaje"> Abordaje</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/boletos/descenso">Descenso</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/boletos/historial">Mis viajes</NavLink>
+                            </li>
+                        
                       </ul>
                     </div>
                   </>

@@ -5,6 +5,8 @@ export const ADMINISTRATION_ROLE_NAMES = [
   'Administrador Sistema',
   'Administrador Empresa',
   'Supervisor',
+  'FAB',
+  ''
 ] as const;
 
 /** CSV de nombres de rol tal como viene en JWT / usuario (login). */
