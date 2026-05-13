@@ -16,6 +16,13 @@ import DeviceList from '../pages/devices/DeviceList';
 import DeviceForm from '../pages/devices/DeviceForm';
 import SessionList from '../pages/Sessions/SessionsList';
 import SessionForm from '../pages/Sessions/SessionForm';
+import ListProgramaciones from '../pages/Programaciones/List';
+import FormProgramacion from '../pages/Programaciones/Form';
+import RecargaTarjeta from '../pages/Recargas/RecargaTarjeta';
+import ConfirmacionRecarga from '../pages/Recargas/ConfirmacionRecarga';
+import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
+import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
+
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
 const FormElements = lazy(() => import('../pages/Form/FormElements'));
@@ -116,6 +123,25 @@ export const administrationRoutes = [
     path: '/users',
     title: 'Users List',
     component: ListUsers,
+  },
+  { path: '/programaciones', 
+    title: 'Programaciones', 
+    component: ListProgramaciones },
+
+  { path: '/programaciones/create', 
+    title: 'Crear Programacion', 
+    component: FormProgramacion },
+
+  {
+    path: '/reportes/ingresopormetodo',
+    title: 'Ingresos por Método de Pago',
+    component: IngresosPorMetodo
+  },
+
+  {
+    path: '/reportes/distribucionetaria',
+    title: 'Distribución Etaria',
+    component: DistribucionEtaria
   },
 ];
 
@@ -363,6 +389,17 @@ export const generalRoutes = [
     title: 'Create Session',
     component: SessionForm,
   },
+{
+    path: '/recargas',
+    title: 'Recargar Tarjeta',
+    component: RecargaTarjeta,
+},
+{
+    path: '/recargas/confirmacion',
+    title: 'Confirmacion Recarga',
+    component: ConfirmacionRecarga,
+},
+
 ];
 
 export const transporteRoutes = [

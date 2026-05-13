@@ -10,6 +10,11 @@ export interface NodoRuta {
     };
 }
 
+export interface NodoConParadero {
+  orden: number;
+  paradero: Paradero;
+}
+
 export interface Ruta {
     id?: number;
     nombre: string;
@@ -17,5 +22,16 @@ export interface Ruta {
     descripcion?: string;
     tarifa: number;
     activa?: boolean;
+    tiempo_estimado?: number;
     nodos?: NodoRuta[];
+    paraderos?: NodoConParadero[];
 }
+
+export interface Paradero {
+  id: number;
+  nombre: string;
+  latitud: number;
+  longitud: number;
+  descripcion?: string;
+}
+  

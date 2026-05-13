@@ -1,12 +1,13 @@
 import { Bus } from "../models/Bus";
 import apiNest from "../interceptors/axiosNestInterceptor";
+import api from "../interceptors/busesInterceptor";
 
 const API_URL = "/buses";
 
 class BusService {
-    async getBuses(): Promise<Bus[]> {
+    async getBuses(): Promise<any[]> {
         try {
-            const response = await apiNest.get<Bus[]>(API_URL);
+            const response = await api.get(API_URL);
             return response.data;
         } catch (error) {
             console.error("Error al obtener buses:", error);
