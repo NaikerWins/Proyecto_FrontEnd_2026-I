@@ -22,6 +22,7 @@ import RecargaTarjeta from '../pages/Recargas/RecargaTarjeta';
 import ConfirmacionRecarga from '../pages/Recargas/ConfirmacionRecarga';
 import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
 import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
+import TendenciaIncidentes from '../pages/Reportes/TendenciaIncidentes';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -135,13 +136,19 @@ export const administrationRoutes = [
   {
     path: '/reportes/ingresopormetodo',
     title: 'Ingresos por Método de Pago',
-    component: IngresosPorMetodo
+    component: IngresosPorMetodo,
   },
 
   {
     path: '/reportes/distribucionetaria',
     title: 'Distribución Etaria',
-    component: DistribucionEtaria
+    component: DistribucionEtaria,
+  },
+
+  {
+    path: '/reportes/tendenciaincidentes',
+    title: 'Tendencia de Incidentes',
+    component: TendenciaIncidentes,
   },
 ];
 

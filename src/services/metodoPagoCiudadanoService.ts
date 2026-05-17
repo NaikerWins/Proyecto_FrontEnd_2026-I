@@ -81,6 +81,16 @@ class MpcService {
         }
     }
 
+    async getMpcByCiudadano(ciudadano_id: string): Promise<Mpc[]> {
+    try {
+        const response = await api.get<Mpc[]>(`${API_URL}/ciudadano/${ciudadano_id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener métodos de pago:', error);
+        return [];
+    }
+}
+
 }
 
 export const mpcService = new MpcService();
