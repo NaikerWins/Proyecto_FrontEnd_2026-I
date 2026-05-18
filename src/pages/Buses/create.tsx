@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 const CreateBus: React.FC = () => {
     const navigate = useNavigate();
     const [empresas, setEmpresas] = useState<{ value: any; label: string }[]>([]);
+    const [fotoPreview, setFotoPreview] = useState<string>("");
+    const [fotoFile, setFotoFile] = useState<File | null>(null);
 
     useEffect(() => {
         const fetchEmpresas = async () => {
@@ -34,6 +36,18 @@ const CreateBus: React.FC = () => {
         { label: "Fuera de servicio", value: "fuera_de_servicio" },
     ];
 
+    const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFotoFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFotoPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const busFields: FormField[] = [
         { name: "placa", label: "Placa", type: "text", required: true },
         { name: "modelo", label: "Modelo", type: "text", required: true },
@@ -41,7 +55,6 @@ const CreateBus: React.FC = () => {
         { name: "capacidadSentados", label: "Capacidad sentados", type: "number", required: true },
         { name: "capacidadParados", label: "Capacidad parados", type: "number", required: true },
         { name: "estado", label: "Estado inicial", type: "select", options: estadoOptions, required: true },
-        { name: "fotoBus", label: "URL de foto del bus", type: "text" },
         { name: "empresaId", label: "Empresa", type: "select", options: empresas, required: true },
     ];
 
@@ -52,22 +65,27 @@ const CreateBus: React.FC = () => {
         capacidadSentados: "",
         capacidadParados: "",
         estado: "",
-        fotoBus: "",
         empresaId: "",
     };
 
     const handleSubmit = async (values: Record<string, any>) => {
         try {
             const { empresaId, ...datosBus } = values;
+            const fotoBus = fotoPreview || undefined;
+
             const bus = await busService.createBus(
                 {
-                    ...datosBus,
+                    placa: datosBus.placa,
+                    modelo: datosBus.modelo,
                     anio: Number(datosBus.anio),
                     capacidadSentados: Number(datosBus.capacidadSentados),
                     capacidadParados: Number(datosBus.capacidadParados),
+                    estado: datosBus.estado,
+                    fotoBus,
                 },
                 Number(empresaId)
             );
+
             if (bus) {
                 Swal.fire({ title: "Éxito", text: "Bus registrado correctamente", icon: "success", timer: 3000 });
                 navigate("/buses");
@@ -85,6 +103,35 @@ const CreateBus: React.FC = () => {
                 Registrar Nuevo Bus
             </Typography>
             <Box sx={{ mt: 3 }}>
+
+                {/* Sección de foto */}
+                <Box sx={{ mb: 3, p: 3, border: "1px solid #e0e0e0", borderRadius: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Foto del Bus
+                    </Typography>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFotoChange}
+                        style={{ marginBottom: 8 }}
+                    />
+                    {fotoPreview && (
+                        <Box
+                            component="img"
+                            src={fotoPreview}
+                            alt="Preview del bus"
+                            sx={{
+                                mt: 1,
+                                width: "100%",
+                                maxHeight: 200,
+                                objectFit: "cover",
+                                borderRadius: 1,
+                                border: "1px solid #e0e0e0",
+                            }}
+                        />
+                    )}
+                </Box>
+
                 <GenericForm
                     title="Información del Bus"
                     fields={busFields}
