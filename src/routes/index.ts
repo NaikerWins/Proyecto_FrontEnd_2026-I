@@ -66,10 +66,14 @@ const ListIncidentes = lazy(() => import('../pages/Incidentes/list'));
 const CreateIncidente = lazy(() => import('../pages/Incidentes/create'));
 const DetailIncidente = lazy(() => import('../pages/Incidentes/detail'));
 
+const ListEmpresas = lazy(() => import('../pages/Empresas/list'));
+const CreateEmpresa = lazy(() => import('../pages/Empresas/create'));
+const UpdateEmpresa = lazy(() => import('../pages/Empresas/update'));
+
 const ListTurnos = lazy(() => import('../pages/Turnos/list'));
 const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 
-const ListRutas = lazy(() => import('../pages/Rutas/list'));
+const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
 const CreateRuta = lazy(() => import('../pages/Rutas/create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
@@ -99,6 +103,21 @@ export const administrationRoutes = [
     path: '/roles/editar/:id',
     title: 'Update Role',
     component: UpdateRole,
+  },
+  {
+    path: '/empresas',
+    title: 'Empresas List',
+    component: ListEmpresas,
+  },
+  {
+    path: '/empresas/crear',
+    title: 'Create Empresa',
+    component: CreateEmpresa,
+  },
+  {
+    path: '/empresas/editar/:id',
+    title: 'Update Empresa',
+    component: UpdateEmpresa,
   },
   {
     path: '/user-roles/:userId',
