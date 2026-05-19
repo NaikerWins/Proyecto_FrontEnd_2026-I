@@ -1,63 +1,87 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import Logo from '../images/logo/logo.svg';
-import SidebarLinkGroup from './SidebarLinkGroup';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../store/store';
 
+import Logo from '../images/logo/logo.svg';
+import SidebarLinkGroup from './SidebarLinkGroup';
+
+import type { RootState } from '../store/store';
+import { hasAdministrationAccess } from '../constants/privilegedRoles';
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-  const location = useLocation();
-  const { pathname } = location;
-  const user = useSelector((s: RootState) => s.user.user);
+const linkClass = (active: boolean) =>
+  `block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+    active ? 'bg-graydark dark:bg-meta-4' : ''
+  }`;
 
+const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+  const { pathname } = useLocation();
+
+  const user = useSelector((s: RootState) => s.user.user);
+  const showAdminMenu = hasAdministrationAccess(user?.role);
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
   const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
+
   const [sidebarExpanded, setSidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
+    storedSidebarExpanded === null
+      ? false
+      : storedSidebarExpanded === 'true',
   );
 
-  // cerrar si clic fuera
+  // Cerrar sidebar al hacer click afuera
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
+
       if (
         !sidebarOpen ||
         sidebar.current.contains(target) ||
         trigger.current.contains(target)
-      )
+      ) {
         return;
+      }
+
       setSidebarOpen(false);
     };
-    document.addEventListener('click', clickHandler);
-    return () => document.removeEventListener('click', clickHandler);
-  });
 
-  // cerrar con ESC
+    document.addEventListener('click', clickHandler);
+
+    return () => document.removeEventListener('click', clickHandler);
+  }, [sidebarOpen, setSidebarOpen]);
+
+  // Cerrar con ESC
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!sidebarOpen || keyCode !== 27) return;
+
       setSidebarOpen(false);
     };
-    document.addEventListener('keydown', keyHandler);
-    return () => document.removeEventListener('keydown', keyHandler);
-  });
 
-  // guardar expansión
+    document.addEventListener('keydown', keyHandler);
+
+    return () => document.removeEventListener('keydown', keyHandler);
+  }, [sidebarOpen, setSidebarOpen]);
+
+  // Expandir sidebar
   useEffect(() => {
-    localStorage.setItem('sidebar-expanded', sidebarExpanded.toString());
+    localStorage.setItem(
+      'sidebar-expanded',
+      sidebarExpanded.toString(),
+    );
+
+    const body = document.querySelector('body');
+
     if (sidebarExpanded) {
-      document.querySelector('body')?.classList.add('sidebar-expanded');
+      body?.classList.add('sidebar-expanded');
     } else {
-      document.querySelector('body')?.classList.remove('sidebar-expanded');
+      body?.classList.remove('sidebar-expanded');
     }
   }, [sidebarExpanded]);
 
@@ -98,124 +122,202 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
       {/* CONTENIDO */}
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
-        <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
-          {/* MENU */}
-          <div>
-            
+        <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
+          {/* ADMINISTRACIÓN */}
+          {showAdminMenu && (
+            <div>
               <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
-                MENU
+                ADMINISTRACIÓN
               </h3>
-            
 
-            <ul className="mb-6 flex flex-col gap-1.5">
-                
-                <>
-                  <li>
-                    <NavLink
-                      to="/users"
-                      className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                        pathname.includes('users') && 'bg-graydark dark:bg-meta-4'
-                      }`}
-                    >
-                      Usuarios
-                    </NavLink>
-                  </li>
-
-                  <li>
-                    <NavLink
-                      to="/roles"
-                      className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                        pathname.includes('roles') && 'bg-graydark dark:bg-meta-4'
-                      }`}
-                    >
-                      Roles
-                    </NavLink>
-                  </li>
-
-                  <li>
-                    <NavLink
-                        to="/programaciones"
-                        className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                    >
-                        Programaciones
-                    </NavLink>
-                </li>
+              <ul className="mb-6 flex flex-col gap-1.5">
                 <li>
-                              <NavLink to="/rutas" 
-                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                              >Rutas disponibles</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/paraderos/lista"
-                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
-                        }`}
+                  <NavLink
+                    to="/users"
+                    className={linkClass(pathname.includes('users'))}
+                  >
+                    Usuarios
+                  </NavLink>
+                </li>
 
-                              > Paraderos</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/boletos/abordaje"
-                              
-                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                              > Abordaje</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/boletos/descenso"
-                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                              
-                              >Descenso</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/boletos/historial"
-                              
-                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                        >Mis viajes</NavLink>
-                            </li>
-                  <li>
-                    <NavLink
-                      to="/permission/list"
-                      className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                        pathname.includes('permission') &&
-                        'bg-graydark dark:bg-meta-4'
-                      }`}
-                    >
-                      Permissions
-                    </NavLink>
-                  </li>
-                    <li>
-                    <NavLink
-                        to="/reportes/ingresopormetodo"
-                        className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('reportes') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                    >
-                        Ingresos por Método
-                    </NavLink>
-                  </li>
-                    <li>
-                    <NavLink
-                        to="/reportes/distribucionetaria"
-                        className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                            pathname.includes('reportes') && 'bg-graydark dark:bg-meta-4'
-                        }`}
-                    >
-                        Distribución Etaria
-                    </NavLink>
-                  </li>              
-                </>
-            
-            </ul>
-          </div>
+                <li>
+                  <NavLink
+                    to="/roles"
+                    className={linkClass(pathname.includes('roles'))}
+                  >
+                    Roles
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/permission/list"
+                    className={linkClass(
+                      pathname.includes('permission'),
+                    )}
+                  >
+                    Permisos
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/programaciones"
+                    className={linkClass(
+                      pathname.startsWith('/programaciones'),
+                    )}
+                  >
+                    Programaciones
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/rutas"
+                    className={linkClass(
+                      pathname.startsWith('/rutas'),
+                    )}
+                  >
+                    Rutas disponibles
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/paraderos/lista"
+                    className={linkClass(
+                      pathname.startsWith('/paraderos'),
+                    )}
+                  >
+                    Paraderos
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/boletos/abordaje"
+                    className={linkClass(
+                      pathname.includes('/boletos/abordaje'),
+                    )}
+                  >
+                    Abordaje
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/boletos/descenso"
+                    className={linkClass(
+                      pathname.includes('/boletos/descenso'),
+                    )}
+                  >
+                    Descenso
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/buses"
+                    className={linkClass(
+                      pathname.includes('/buses'),
+                    )}
+                  >
+                    Buses
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/conductores"
+                    className={linkClass(
+                      pathname.includes('/conductores'),
+                    )}
+                  >
+                    Conductores
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/empresas"
+                    className={linkClass(
+                      pathname.includes('/empresas'),
+                    )}
+                  >
+                    Empresas
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/boletos/historial"
+                    className={linkClass(
+                      pathname.includes('/boletos/historial'),
+                    )}
+                  >
+                    Mis viajes
+                  </NavLink>
+                </li>
+              </ul>
+
+              {/* REPORTES */}
+              <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
+                REPORTES
+              </h3>
+
+              <ul className="mb-6 flex flex-col gap-1.5">
+                <li>
+                  <NavLink
+                    to="/reportes/ingresopormetodo"
+                    className={linkClass(
+                      pathname ===
+                        '/reportes/ingresopormetodo',
+                    )}
+                  >
+                    Ingresos por Método
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/metodos-pago"
+                    className={linkClass(
+                      pathname ===
+                        '/metodos-pago',
+                    )}
+                  >
+                    Metodo de pago
+                  </NavLink>
+                </li>
+
+                
+
+                <li>
+                  <NavLink
+                    to="/reportes/distribucionetaria"
+                    className={linkClass(
+                      pathname ===
+                        '/reportes/distribucionetaria',
+                    )}
+                  >
+                    Distribución Etaria
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/reportes/tendenciaincidentes"
+                    className={linkClass(
+                      pathname ===
+                        '/reportes/tendenciaincidentes',
+                    )}
+                  >
+                    Tendencia de Incidentes
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          )}
 
           {/* OTHERS */}
           <div>
@@ -224,9 +326,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             </h3>
 
             <ul className="mb-6 flex flex-col gap-1.5">
+              <li>
+                <NavLink
+                  to="/recargas"
+                  className={linkClass(
+                    pathname.startsWith('/recargas'),
+                  )}
+                >
+                  Recargar Tarjeta
+                </NavLink>
+              </li>
+
+              {/* AUTH */}
               <SidebarLinkGroup
                 activeCondition={
-                  pathname === '/auth' || pathname.includes('auth')
+                  pathname === '/auth' ||
+                  pathname.includes('auth')
                 }
               >
                 {(handleClick, open) => (
@@ -239,6 +354,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
+
                         sidebarExpanded
                           ? handleClick()
                           : setSidebarExpanded(true);
@@ -267,48 +383,40 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       </svg>
                     </NavLink>
 
-                    <div className={`${!open && 'hidden'}`}>
+                    <div className={!open ? 'hidden' : ''}>
                       <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                         <li>
                           <NavLink
                             to="/auth/signin"
                             className={({ isActive }) =>
-                              'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                              (isActive && '!text-white')
+                              `group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
+                                isActive ? '!text-white' : ''
+                              }`
                             }
                           >
                             Sign In
                           </NavLink>
                         </li>
-                        
+
+                        {showAdminMenu && (
                           <li>
                             <NavLink
                               to="/auth/signup"
                               className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
+                                `group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
+                                  isActive ? '!text-white' : ''
+                                }`
                               }
                             >
                               Sign Up
                             </NavLink>
                           </li>
-                            
-                        
+                        )}
                       </ul>
                     </div>
                   </>
                 )}
               </SidebarLinkGroup>
-            <li>
-              <NavLink
-                to="/recargas"
-                className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('recargas') && 'bg-graydark dark:bg-meta-4'
-                }`}
-            >
-                Recargar Tarjeta
-              </NavLink>
-              </li>
             </ul>
           </div>
         </nav>

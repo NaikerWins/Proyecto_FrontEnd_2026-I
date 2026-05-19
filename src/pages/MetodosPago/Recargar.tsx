@@ -27,13 +27,14 @@ export default function RecargarMetodoPago() {
     }
   }, [id]);
 
-  const apiCargarTarjeta = async (tarjetaId: number) => {
+    const apiCargarTarjeta = async (tarjetaId: number) => {
     try {
-      const res = await import("../interceptors/axiosNest").then(m =>
-        m.default.get(`/metodospagociudadano/${tarjetaId}`)
-      ).catch(() => null);
-    } catch {}
-  };
+      const userStr = localStorage.getItem("user");
+      if (!userStr || userStr === "undefined") return;
+      const user = JSON.parse(userStr);
+      if (!user?.id) return;
+    } catch { return; }
+
 
   const handleIniciarRecarga = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,4 +155,4 @@ export default function RecargarMetodoPago() {
       </form>
     </div>
   );
-}
+    }}

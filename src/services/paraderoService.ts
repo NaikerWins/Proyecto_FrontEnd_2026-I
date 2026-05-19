@@ -1,5 +1,5 @@
-import apiNest from "../interceptors/axiosNest";
-import { ParaderoCercano } from "../models/Paradero";
+import { Paradero } from "../models/Paradero";
+import apiNest from "../interceptors/axiosNestInterceptor";
 
 const API_URL = "/paraderos";
 

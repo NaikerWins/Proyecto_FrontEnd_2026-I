@@ -17,7 +17,7 @@ import Verify2FA from './components/Auth/Verify2FA';
 import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPassword from './pages/Authentication/ResetPassword';
 import Unauthorized from './pages/Unauthorized';
-import RutasList from "./pages/Rutas/List";
+import RutasList from "./pages/Rutas/list";
 import RutaParaderos from "./pages/Rutas/Paraderos";
 import ParaderosCercanos from "./pages/Paraderos/Cercanos";
 import Abordaje from "./pages/Boletos/Abordaje";

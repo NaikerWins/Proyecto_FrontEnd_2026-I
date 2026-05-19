@@ -33,6 +33,16 @@ class ReporteService {
         }
     }
 
+    async getTendenciaIncidentes(meses: number): Promise<any[]> {
+    try {
+        const response = await api.get(`${API_URL}/incidentes/${meses}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener tendencia incidentes:', error);
+        return [];
+    }
+}
+
 
 }
 

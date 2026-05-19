@@ -22,6 +22,7 @@ import RecargaTarjeta from '../pages/Recargas/RecargaTarjeta';
 import ConfirmacionRecarga from '../pages/Recargas/ConfirmacionRecarga';
 import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
 import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
+import TendenciaIncidentes from '../pages/Reportes/TendenciaIncidentes';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -45,6 +46,36 @@ const CreateRole = lazy(() => import('../pages/Roles/Create'));
 const UpdateRole = lazy(() => import('../pages/Roles/Update'));
 const UserRolesList = lazy(() => import('../pages/UserRoles/List'));
 const AssignRole = lazy(() => import('../pages/UserRoles/AssignRole'));
+
+
+const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
+const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
+const ListAddresses = lazy(() => import('../pages/addresses/List'));
+const CreateAddress = lazy(() => import('../pages/addresses/Create'));
+const UpdateAddress = lazy(() => import('../pages/addresses/Update'));
+
+const ListBuses = lazy(() => import('../pages/Buses/list'));
+const CreateBus = lazy(() => import('../pages/Buses/create'));
+const UpdateBus = lazy(() => import('../pages/Buses/update'));
+
+const ListParaderos = lazy(() => import('../pages/Paraderos/list'));
+const CreateParadero = lazy(() => import('../pages/Paraderos/create'));
+const UpdateParadero = lazy(() => import('../pages/Paraderos/update'));
+
+const ListIncidentes = lazy(() => import('../pages/Incidentes/list'));
+const CreateIncidente = lazy(() => import('../pages/Incidentes/create'));
+const DetailIncidente = lazy(() => import('../pages/Incidentes/detail'));
+
+const ListEmpresas = lazy(() => import('../pages/Empresas/list'));
+const CreateEmpresa = lazy(() => import('../pages/Empresas/create'));
+const UpdateEmpresa = lazy(() => import('../pages/Empresas/update'));
+
+const ListTurnos = lazy(() => import('../pages/Turnos/list'));
+const CreateTurno = lazy(() => import('../pages/Turnos/create'));
+
+const ListRutas = lazy(() =>  import('../pages/Rutas/List'));
+const CreateRuta = lazy(() => import('../pages/Rutas/Create'));
+const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
 export const administrationRoutes = [
@@ -72,6 +103,21 @@ export const administrationRoutes = [
     path: '/roles/editar/:id',
     title: 'Update Role',
     component: UpdateRole,
+  },
+  {
+    path: '/empresas',
+    title: 'Empresas List',
+    component: ListEmpresas,
+  },
+  {
+    path: '/empresas/crear',
+    title: 'Create Empresa',
+    component: CreateEmpresa,
+  },
+  {
+    path: '/empresas/editar/:id',
+    title: 'Update Empresa',
+    component: UpdateEmpresa,
   },
   {
     path: '/user-roles/:userId',
@@ -109,23 +155,94 @@ export const administrationRoutes = [
   {
     path: '/reportes/ingresopormetodo',
     title: 'Ingresos por Método de Pago',
-    component: IngresosPorMetodo
+    component: IngresosPorMetodo,
   },
 
   {
     path: '/reportes/distribucionetaria',
     title: 'Distribución Etaria',
-    component: DistribucionEtaria
+    component: DistribucionEtaria,
+  },
+
+  {
+    path: '/reportes/tendenciaincidentes',
+    title: 'Tendencia de Incidentes',
+    component: TendenciaIncidentes,
   },
 ];
 
-const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
-const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
-const ListAddresses = lazy(() => import('../pages/addresses/List'));
-const CreateAddress = lazy(() => import('../pages/addresses/Create'));
-const UpdateAddress = lazy(() => import('../pages/addresses/Update'));
 
 export const generalRoutes = [
+  { 
+    path: '/buses', 
+    title: 'Buses List', 
+    component: ListBuses 
+  },
+  { 
+    path: '/buses/crear', 
+    title: 'Create Bus', 
+    component: CreateBus 
+  },
+  { 
+    path: '/buses/editar/:id', 
+    title: 'Update Bus', 
+    component: UpdateBus 
+  },
+  { 
+    path: '/paraderos', 
+    title: 'Paraderos List', 
+    component: ListParaderos 
+  },
+  { 
+    path: '/paraderos/crear', 
+    title: 'Create Paradero', 
+    component: CreateParadero 
+  },
+  { 
+    path: '/paraderos/editar/:id', 
+    title: 'Update Paradero', 
+    component: UpdateParadero 
+  },
+  { 
+    path: '/incidentes/bus/:busId', 
+    title: 'Incidentes Bus', 
+    component: ListIncidentes 
+  },
+  { 
+    path: '/incidentes/crear/:busId', 
+    title: 'Create Incidente', 
+    component: CreateIncidente 
+  },
+  { 
+    path: '/incidentes/:id', 
+    title: 'Detail Incidente', 
+    component: DetailIncidente 
+  },
+  { 
+    path: '/turnos', 
+    title: 'Turnos List', 
+    component: ListTurnos 
+  },
+  { 
+    path: '/turnos/crear', 
+    title: 'Create Turno', 
+    component: CreateTurno 
+  },
+  { 
+    path: '/rutas', 
+    title: 'Rutas List', 
+    component: ListRutas 
+  },
+  { 
+    path: '/rutas/crear', 
+    title: 'Create Ruta', 
+    component: CreateRuta 
+  },
+  { 
+    path: '/rutas/:id', 
+    title: 'Detail Ruta', 
+    component: DetailRuta 
+  },
   {
     path: '/demo',
     title: 'Demo',
@@ -311,5 +428,78 @@ export const generalRoutes = [
 
 ];
 
-const routes = [...generalRoutes, ...administrationRoutes];
+export const transporteRoutes = [
+  { 
+    path: '/buses', 
+    title: 'Buses List', 
+    component: ListBuses 
+  },
+  { 
+    path: '/buses/crear', 
+    title: 'Create Bus', 
+    component: CreateBus 
+  },
+  { 
+    path: '/buses/editar/:id', 
+    title: 'Update Bus', 
+    component: UpdateBus 
+  },
+  { 
+    path: '/paraderos', 
+    title: 'Paraderos List', 
+    component: ListParaderos 
+  },
+  { 
+    path: '/paraderos/crear', 
+    title: 'Create Paradero', 
+    component: CreateParadero 
+  },
+  { 
+    path: '/paraderos/editar/:id', 
+    title: 'Update Paradero', 
+    component: UpdateParadero 
+  },
+  { 
+    path: '/incidentes/bus/:busId', 
+    title: 'Incidentes Bus', 
+    component: ListIncidentes 
+  },
+  { 
+    path: '/incidentes/crear/:busId', 
+    title: 'Create Incidente', 
+    component: CreateIncidente 
+  },
+  { 
+    path: '/incidentes/:id', 
+    title: 'Detail Incidente', 
+    component: DetailIncidente 
+  },
+  { 
+    path: '/turnos', 
+    title: 'Turnos List', 
+    component: ListTurnos 
+  },
+  { 
+    path: '/turnos/crear', 
+    title: 'Create Turno', 
+    component: CreateTurno 
+  },
+  { 
+    path: '/rutas', 
+    title: 'Rutas List', 
+    component: ListRutas 
+  },
+  { 
+    path: '/rutas/crear', 
+    title: 'Create Ruta', 
+    component: CreateRuta 
+  },
+  { 
+    path: '/rutas/:id', 
+    title: 'Detail Ruta', 
+    component: DetailRuta 
+  },
+];
+
+const routes = [...generalRoutes, ...administrationRoutes, ...transporteRoutes];
 export default routes;

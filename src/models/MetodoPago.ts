@@ -1,6 +1,7 @@
 export interface MetodoPago {
   id: number;
   tipo: string;
+  saldoInicial: number;
 }
 
 export interface MetodoPagoCiudadano {
