@@ -30,7 +30,7 @@ export default function Historial() {
   useEffect(() => {
     // Obtener el id del usuario logueado
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const ciudadanoId = user?.id;
+    const ciudadanoId = user?.id.toString();;
     if (ciudadanoId) {
       boletoService.getHistorial(ciudadanoId).then(setViajes);
     }
