@@ -31,11 +31,6 @@ const AdministrationGuard = ({ children }: Props) => {
     );
   }
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 7729fdcf9b10467195d4aa135fc2d88c043f4a13
   return <>{children}</>;
 };
 

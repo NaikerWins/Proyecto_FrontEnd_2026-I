@@ -3,6 +3,12 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import CreateRuta from "./pages/Rutas/Create";
+import ParaderosList from "./pages/Paraderos/List";
+import CreateParadero from "./pages/Paraderos/Create";
+import CreateNodo from "./pages/Nodos/Create";
+import ProgramacionesList from "./pages/Programaciones/List";
+import CreateProgramacion from "./pages/Programaciones/Create";
 import ECommerce from './pages/Dashboard/ECommerce';
 import SignInPage from './pages/Authentication/SignInPage';
 import SignUp from './pages/Authentication/SignUp';
@@ -18,6 +24,11 @@ import Abordaje from "./pages/Boletos/Abordaje";
 import Descenso from "./pages/Boletos/Descenso";
 import Historial from "./pages/Boletos/Historial";
 import Loader from './common/Loader';
+import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
+import CreateMetodoPago from "./pages/MetodosPago/Create";
+import RecargarMetodoPago from "./pages/MetodosPago/Recargar";
+import TiposList from "./pages/MetodosPago/TiposList";
+
 import {
   administrationRoutes,
   generalRoutes,
@@ -66,7 +77,17 @@ function App() {
         <Route path="/boletos/descenso" element={<Descenso />} />
         <Route path="/boletos/historial" element={<Historial />} />
         <Route path="/auth/complete-profile" element={<CompleteProfile />} />
+        <Route path="/metodos-pago" element={<MisTarjetas />} />
+<Route path="/metodos-pago/crear" element={<CreateMetodoPago />} />
+<Route path="/metodos-pago/:id/recargar" element={<RecargarMetodoPago />} />
+<Route path="/metodos-pago/tipos" element={<TiposList />} />
         <Route path="/auth/verify-2fa" element={<Verify2FA />} />
+        <Route path="/rutas/crear" element={<CreateRuta />} />
+<Route path="/paraderos/lista" element={<ParaderosList />} />
+<Route path="/paraderos/crear" element={<CreateParadero />} />
+<Route path="/nodos/crear" element={<CreateNodo />} />
+<Route path="/programaciones" element={<ProgramacionesList />} />
+<Route path="/programaciones/crear" element={<CreateProgramacion />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />

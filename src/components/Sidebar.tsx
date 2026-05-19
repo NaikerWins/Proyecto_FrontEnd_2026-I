@@ -142,6 +142,45 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         Programaciones
                     </NavLink>
                 </li>
+                <li>
+                              <NavLink to="/rutas" 
+                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                              >Rutas disponibles</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/paraderos/lista"
+                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+
+                              > Paraderos</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/boletos/abordaje"
+                              
+                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                              > Abordaje</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/boletos/descenso"
+                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                              
+                              >Descenso</NavLink>
+                            </li>
+                            <li>
+                              <NavLink to="/boletos/historial"
+                              
+                              className={`block rounded-sm py-2 pl-6 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes('programaciones') && 'bg-graydark dark:bg-meta-4'
+                        }`}
+                        >Mis viajes</NavLink>
+                            </li>
                   <li>
                     <NavLink
                       to="/permission/list"
@@ -253,23 +292,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Sign Up
                             </NavLink>
                           </li>
-                          // Dentro del sidebar, agrega esta sección
-                                      {/* Planificación de Viajes */}
-                            <li>
-                              <NavLink to="/rutas">Rutas disponibles</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/paraderos/cercanos"> Paraderos cercanos</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/boletos/abordaje"> Abordaje</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/boletos/descenso">Descenso</NavLink>
-                            </li>
-                            <li>
-                              <NavLink to="/boletos/historial">Mis viajes</NavLink>
-                            </li>
+                            
                         
                       </ul>
                     </div>

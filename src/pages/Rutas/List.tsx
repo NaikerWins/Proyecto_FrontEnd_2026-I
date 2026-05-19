@@ -28,7 +28,9 @@ export default function RutasList() {
   const handleBuscar = () => cargar(busqueda || undefined);
 
   return (
+    
     <div className="mx-auto max-w-7xl px-4 py-8">
+      <button onClick={() => navigate("/")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
         Rutas Disponibles
       </h1>
@@ -56,7 +58,11 @@ export default function RutasList() {
           >
             Limpiar
           </button>
+          
         )}
+        <button className="rounded bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-opacity-90" onClick={() => navigate("/rutas/crear")}>
+          Crear Ruta
+        </button>
       </div>
 
       {loading ? (
