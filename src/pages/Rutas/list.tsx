@@ -16,7 +16,7 @@ export default function RutasList() {
   const cargar = async (nombre?: string) => {
     setLoading(true);
     try {
-      const data = await rutaService.getRutas(nombre);
+      const data = await rutaService.getAll(nombre);
       setRutas(data);
     } catch (e) {
       console.error(e);

@@ -58,6 +58,7 @@ const ListProgramaciones: React.FC = () => {
             {/* Header */}
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
+                <button onClick={() => navigate("/")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
                     <h2 className="text-title-md2 font-bold text-black dark:text-white">
                         Programaciones de Ruta
                     </h2>

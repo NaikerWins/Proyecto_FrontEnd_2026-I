@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { paraderoService } from "../../services/paraderoService";
 import { ParaderoCercano } from "../../models/Paradero";
+import { useNavigate } from "react-router-dom";
 
 export default function ParaderosCercanos() {
+  const navigate = useNavigate();
   const [paraderos, setParaderos] = useState<ParaderoCercano[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -40,6 +42,7 @@ export default function ParaderosCercanos() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
+      <button onClick={() => navigate("/paraderos/lista")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
         Paraderos Cercanos
       </h1>

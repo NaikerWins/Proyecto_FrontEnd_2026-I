@@ -60,7 +60,7 @@ const UpdateBus = lazy(() => import('../pages/Buses/update'));
 
 const ListParaderos = lazy(() => import('../pages/Paraderos/list'));
 const CreateParadero = lazy(() => import('../pages/Paraderos/create'));
-const UpdateParadero = lazy(() => import('../pages/Paraderos/update'));
+
 
 const ListIncidentes = lazy(() => import('../pages/Incidentes/list'));
 const CreateIncidente = lazy(() => import('../pages/Incidentes/create'));
@@ -73,7 +73,7 @@ const UpdateEmpresa = lazy(() => import('../pages/Empresas/update'));
 const ListTurnos = lazy(() => import('../pages/Turnos/list'));
 const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 
-const ListRutas = lazy(() =>  import('../pages/Rutas/List'));
+const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
 const CreateRuta = lazy(() => import('../pages/Rutas/create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
@@ -216,11 +216,6 @@ export const generalRoutes = [
     path: '/paraderos/crear', 
     title: 'Create Paradero', 
     component: CreateParadero 
-  },
-  { 
-    path: '/paraderos/editar/:id', 
-    title: 'Update Paradero', 
-    component: UpdateParadero 
   },
   { 
     path: '/incidentes/bus/:busId', 
@@ -472,11 +467,6 @@ export const transporteRoutes = [
     path: '/paraderos/crear', 
     title: 'Create Paradero', 
     component: CreateParadero 
-  },
-  { 
-    path: '/paraderos/editar/:id', 
-    title: 'Update Paradero', 
-    component: UpdateParadero 
   },
   { 
     path: '/incidentes', 

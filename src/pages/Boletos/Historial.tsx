@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { boletoService } from "../../services/boletoService";
 import { DescensoResponse } from "../../models/Boleto";
+import { useNavigate } from "react-router-dom";
 
 export default function Descenso() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ boleto_id: "", paradero_descenso_id: "" });
   const [resultado, setResultado] = useState<DescensoResponse | null>(null);
   const [error, setError] = useState("");
@@ -28,6 +30,7 @@ export default function Descenso() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-8">
+      <button onClick={() => navigate("/")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
         Registrar Descenso
       </h1>

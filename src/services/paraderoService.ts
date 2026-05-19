@@ -1,58 +1,27 @@
-import { Paradero } from "../models/Paradero";
+import { Paradero, ParaderoCercano } from "../models/Paradero";
 import apiNest from "../interceptors/axiosNestInterceptor";
 
 const API_URL = "/paraderos";
 
-class ParaderoService {
-    async getParaderos(): Promise<Paradero[]> {
-        try {
-            const response = await apiNest.get<Paradero[]>(API_URL);
-            return response.data;
-        } catch (error) {
-            console.error("Error al obtener paraderos:", error);
-            return [];
-        }
-    }
+export const paraderoService = {
+  getAll: async (): Promise<Paradero[]> => {
+    const res = await apiNest.get<Paradero[]>(API_URL);
+    return res.data;
+  },
 
-    async getParaderoById(id: number): Promise<Paradero | null> {
-        try {
-            const response = await apiNest.get<Paradero>(`${API_URL}/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error("Paradero no encontrado:", error);
-            return null;
-        }
-    }
+  getCercanos: async (latitud: number, longitud: number): Promise<ParaderoCercano[]> => {
+    const res = await apiNest.get<ParaderoCercano[]>(`${API_URL}/cercanos`, {
+      params: { latitud, longitud },
+    });
+    return res.data;
+  },
 
-    async createParadero(paradero: Omit<Paradero, "id" | "codigo" | "activo">): Promise<Paradero | null> {
-        try {
-            const response = await apiNest.post<Paradero>(API_URL, paradero);
-            return response.data;
-        } catch (error) {
-            console.error("Error al crear paradero:", error);
-            return null;
-        }
-    }
+  create: async (data: Partial<Paradero>): Promise<Paradero> => {
+    const res = await apiNest.post<Paradero>(API_URL, data);
+    return res.data;
+  },
 
-    async updateParadero(id: number, paradero: Partial<Paradero>): Promise<Paradero | null> {
-        try {
-            const response = await apiNest.put<Paradero>(`${API_URL}/${id}`, paradero);
-            return response.data;
-        } catch (error) {
-            console.error("Error al actualizar paradero:", error);
-            return null;
-        }
-    }
-
-    async deleteParadero(id: number): Promise<boolean> {
-        try {
-            await apiNest.delete(`${API_URL}/${id}`);
-            return true;
-        } catch (error) {
-            console.error("Error al eliminar paradero:", error);
-            return false;
-        }
-    }
-}
-
-export const paraderoService = new ParaderoService();
+  remove: async (id: number): Promise<void> => {
+    await apiNest.delete(`${API_URL}/${id}`);
+  },
+};

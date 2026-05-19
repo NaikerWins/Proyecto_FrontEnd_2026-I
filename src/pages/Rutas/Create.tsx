@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { rutaService } from "../../services/rutaService";
-import { paraderoService } from "../../services/paraderoService";
-import { Paradero } from "../../models/Paradero"
+import { paraderoService, Paradero } from "../../services/paraderoService";
 
 export default function CreateRuta() {
   const navigate = useNavigate();
@@ -12,6 +11,8 @@ export default function CreateRuta() {
   const [paraderoSeleccionado, setParaderoSeleccionado] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => { paraderoService.getAll().then(setParaderos); }, []);
 
   const agregarParadero = () => {
     if (!paraderoSeleccionado) return;
