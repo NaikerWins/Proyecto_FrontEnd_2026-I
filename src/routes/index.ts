@@ -23,6 +23,7 @@ import ConfirmacionRecarga from '../pages/Recargas/ConfirmacionRecarga';
 import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
 import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
 import TendenciaIncidentes from '../pages/Reportes/TendenciaIncidentes';
+import Horarios from '../pages/Programaciones/Horarios';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -424,6 +425,11 @@ export const generalRoutes = [
     path: '/recargas/confirmacion',
     title: 'Confirmacion Recarga',
     component: ConfirmacionRecarga,
+},
+{
+    path: '/horario',
+    title: 'Horarios',
+    component: Horarios,
 },
 
 ];

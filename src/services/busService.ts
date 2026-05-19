@@ -1,5 +1,4 @@
 import { Bus } from "../models/Bus";
-import apiNest from "../interceptors/axiosNestInterceptor";
 import api from "../interceptors/busesInterceptor";
 
 const API_URL = "/buses";
@@ -17,7 +16,7 @@ class BusService {
 
     async getBusById(id: number): Promise<Bus | null> {
         try {
-            const response = await apiNest.get<Bus>(`${API_URL}/${id}`);
+            const response = await api.get<Bus>(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
             console.error("Bus no encontrado:", error);
@@ -27,10 +26,7 @@ class BusService {
 
     async createBus(bus: Omit<Bus, "id" | "codigoQR" | "gps">, empresaId: number): Promise<Bus | null> {
         try {
-            const response = await apiNest.post<Bus>(
-                `${API_URL}?empresaId=${empresaId}`,
-                bus
-            );
+            const response = await api.post<Bus>(`${API_URL}?empresaId=${empresaId}`, bus);
             return response.data;
         } catch (error) {
             console.error("Error al crear bus:", error);
@@ -40,7 +36,7 @@ class BusService {
 
     async updateBus(id: number, bus: Partial<Bus>): Promise<Bus | null> {
         try {
-            const response = await apiNest.put<Bus>(`${API_URL}/${id}`, bus);
+            const response = await api.put<Bus>(`${API_URL}/${id}`, bus);
             return response.data;
         } catch (error) {
             console.error("Error al actualizar bus:", error);
@@ -50,7 +46,7 @@ class BusService {
 
     async updateEstado(id: number, estado: string): Promise<Bus | null> {
         try {
-            const response = await apiNest.patch<Bus>(`${API_URL}/${id}/estado`, { estado });
+            const response = await api.patch<Bus>(`${API_URL}/${id}/estado`, { estado });
             return response.data;
         } catch (error) {
             console.error("Error al actualizar estado:", error);
@@ -60,7 +56,7 @@ class BusService {
 
     async deleteBus(id: number): Promise<boolean> {
         try {
-            await apiNest.delete(`${API_URL}/${id}`);
+            await api.delete(`${API_URL}/${id}`);
             return true;
         } catch (error) {
             console.error("Error al eliminar bus:", error);

@@ -16,6 +16,7 @@ import CompleteProfile from './pages/Authentication/CompleteProfile';
 import Verify2FA from './components/Auth/Verify2FA';
 import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPassword from './pages/Authentication/ResetPassword';
+import Horarios from './pages/Programaciones/Horarios';
 import Unauthorized from './pages/Unauthorized';
 import RutasList from "./pages/Rutas/list";
 import RutaParaderos from "./pages/Rutas/Paraderos";
@@ -87,6 +88,7 @@ function App() {
 <Route path="/paraderos/crear" element={<CreateParadero />} />
 <Route path="/nodos/crear" element={<CreateNodo />} />
 <Route path="/programaciones" element={<ProgramacionesList />} />
+<Route path="/horarios-rutas" element={<Horarios />} />
 <Route path="/programaciones/crear" element={<CreateProgramacion />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -95,6 +97,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />
+            <Route path="/horarios-rutas" element={<Horarios />} />
             {generalRoutes.map((routeItem, index) => {
               const { path, component: Component } = routeItem;
               return (

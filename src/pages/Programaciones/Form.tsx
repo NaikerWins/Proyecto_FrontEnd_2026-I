@@ -15,6 +15,7 @@ const FormProgramacion = () => {
     const [rutas, setRutas] = useState<any[]>([]);
     const [buses, setBuses] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -34,6 +35,7 @@ const FormProgramacion = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrorMsg('');
         setLoading(true);
         try {
             const nuevaProgramacion = {
@@ -45,9 +47,11 @@ const FormProgramacion = () => {
             };
             await programacionService.createProgramacion(nuevaProgramacion as any);
             Swal.fire({ icon: 'success', title: '¡Creado!', text: 'Programación creada correctamente' });
-            navigate('/programaciones');
-        } catch (error) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Ocurrió un error al crear la programación' });
+            navigate('/programaciones', { replace: true, state: { refresh: true } });
+        } catch (error: any) {
+            const mensaje = error.response?.data?.message;
+            const texto = Array.isArray(mensaje) ? mensaje.join(', ') : mensaje || 'Error al crear la programación';
+            setErrorMsg(texto);
         } finally {
             setLoading(false);
         }
@@ -55,7 +59,6 @@ const FormProgramacion = () => {
 
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-            {/* Header */}
             <div className="mb-6">
                 <button
                     onClick={() => navigate('/programaciones')}
@@ -75,7 +78,6 @@ const FormProgramacion = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-                {/* Form */}
                 <div className="xl:col-span-2">
                     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                         <div className="border-b border-stroke px-6 py-4 dark:border-strokedark">
@@ -83,7 +85,6 @@ const FormProgramacion = () => {
                         </div>
                         <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                                {/* Ruta */}
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                                         Ruta <span className="text-meta-1">*</span>
@@ -103,7 +104,6 @@ const FormProgramacion = () => {
                                     </select>
                                 </div>
 
-                                {/* Bus */}
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                                         Bus <span className="text-meta-1">*</span>
@@ -123,7 +123,6 @@ const FormProgramacion = () => {
                                     </select>
                                 </div>
 
-                                {/* Fecha y hora */}
                                 <div className="sm:col-span-2">
                                     <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                                         Fecha y hora de salida <span className="text-meta-1">*</span>
@@ -137,7 +136,6 @@ const FormProgramacion = () => {
                                     />
                                 </div>
 
-                                {/* Recurrencia */}
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                                         Recurrencia
@@ -154,7 +152,6 @@ const FormProgramacion = () => {
                                     </select>
                                 </div>
 
-                                {/* Tolerancia */}
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-black dark:text-white">
                                         Tolerancia (minutos)
@@ -170,6 +167,12 @@ const FormProgramacion = () => {
                                     <p className="mt-1 text-xs text-gray-400">Máximo 30 minutos</p>
                                 </div>
                             </div>
+
+                            {errorMsg && (
+                                <div className="mt-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                                    {errorMsg}
+                                </div>
+                            )}
 
                             <div className="mt-6 flex gap-3">
                                 <button
