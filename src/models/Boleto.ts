@@ -14,6 +14,7 @@ export interface AbordajeResponse {
   message: string;
   boleto_id: number;
   monto_cobrado: number;
+  saldo_restante?: number;
   ocupacion_actual: number;
   capacidad_maxima: number;
 }

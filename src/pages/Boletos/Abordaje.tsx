@@ -143,34 +143,22 @@ export default function Abordaje() {
             {resultado.message}
           </h2>
 
-          <div className="space-y-2 text-sm text-gray-700">
-
-            <p>
-              <span className="font-medium">
-                Boleto ID:
-              </span>{" "}
-              {resultado.boleto_id}
-            </p>
-
-            <p>
-              <span className="font-medium">
-                Monto cobrado:
-              </span>{" "}
-              $
-              {Number(
-                resultado.monto_cobrado
-              ).toLocaleString()}
-            </p>
-
-            <p>
-              <span className="font-medium">
-                Ocupación:
-              </span>{" "}
-              {resultado.ocupacion_actual}/
-              {resultado.capacidad_maxima}
-            </p>
-
-          </div>
+         <div className="space-y-2 text-sm text-gray-700">
+  <p>
+    <span className="font-medium">Boleto ID:</span> {resultado.boleto_id}
+  </p>
+  <p>
+    <span className="font-medium">Monto cobrado:</span> ${Number(resultado.monto_cobrado).toLocaleString()}
+  </p>
+  {resultado.saldo_restante !== undefined && (
+    <p>
+      <span className="font-medium">Saldo restante:</span> ${Number(resultado.saldo_restante).toLocaleString()}
+    </p>
+  )}
+  <p>
+    <span className="font-medium">Ocupación:</span> {resultado.ocupacion_actual}/{resultado.capacidad_maxima}
+  </p>
+</div>
 
           <button
             onClick={() => setResultado(null)}
