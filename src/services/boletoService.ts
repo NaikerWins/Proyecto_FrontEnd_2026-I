@@ -44,4 +44,18 @@ export const boletoService = {
   const res = await apiNest.get(`/metodospagociudadano/ciudadano/${ciudadano_id}`);
   return res.data;
 },
+
+async getBoletosActivos(): Promise<any[]> {
+
+  try {
+
+    const response = await api.get("/boletos/activos");
+    return response.data;
+
+  } catch (error) {
+
+    console.error(error);
+    return [];
+  }
+}
 };

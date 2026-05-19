@@ -28,7 +28,8 @@ import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
 import CreateMetodoPago from "./pages/MetodosPago/Create";
 import RecargarMetodoPago from "./pages/MetodosPago/Recargar";
 import TiposList from "./pages/MetodosPago/TiposList";
-
+import ListConductores from "./pages/Conductores/ListConductores";
+import CreateConductor from "./pages/Conductores/CreateConductor";
 import {
   administrationRoutes,
   generalRoutes,
@@ -92,6 +93,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+<Route path="/conductores" element={<ListConductores />} />
+<Route path="/conductores/crear" element={<CreateConductor />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />
