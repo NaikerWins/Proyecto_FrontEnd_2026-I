@@ -44,10 +44,8 @@ export default function CreateRuta() {
       });
       navigate("/rutas");
     } catch (e: any) {
-    console.error('Error completo:', e);
-    console.error('Response:', e.response?.data);
-    setError(e.response?.data?.message?.join?.(", ") || e.response?.data?.message || "Error al crear la ruta.");
-    }
+      setError(e.response?.data?.message?.join?.(", ") || e.response?.data?.message || "Error al crear la ruta.");
+    } finally { setLoading(false); }
   };
 
   return (
@@ -111,6 +109,4 @@ export default function CreateRuta() {
       </form>
     </div>
   );
-
-
 }
