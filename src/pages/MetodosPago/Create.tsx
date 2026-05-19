@@ -1,85 +1,294 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { metodoPagoService } from "../../services/metodoPagoService";
-import { MetodoPago } from "../../models/MetodoPago";
 
-export default function CreateMetodoPago() {
+import { metodoPagoService } from "../../services/metodoPagoService";
+
+interface MetodoPago {
+  id: number;
+  tipo: string;
+}
+
+export default function CrearMetodoPagoCiudadano() {
+
   const navigate = useNavigate();
+
   const [tipos, setTipos] = useState<MetodoPago[]>([]);
-  const [tipoSeleccionado, setTipoSeleccionado] = useState("");
-  const [saldoInicial, setSaldoInicial] = useState("0");
-  const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({
+    id_ciudadano: "",
+    saldo: "",
+    monto: "",
+    cargo: "",
+    metodopagoId: "",
+  });
+
   const [loading, setLoading] = useState(false);
-  const [ciudadanoId, setCiudadanoId] = useState<string | null>(null);
+
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    metodoPagoService.getAllTipos().then(setTipos);
+
+    cargarTipos();
+
     const userStr = localStorage.getItem("user");
+
     if (userStr && userStr !== "undefined") {
-      try { const u = JSON.parse(userStr); setCiudadanoId(u?.id); } catch {}
+
+      try {
+
+        const user = JSON.parse(userStr);
+
+        setFormData((prev) => ({
+          ...prev,
+          id_ciudadano: user.id || "",
+        }));
+
+      } catch (error) {
+        console.error(error);
+      }
     }
+
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!ciudadanoId) { setError("No se encontró tu usuario."); return; }
-    if (!tipoSeleccionado) { setError("Selecciona un tipo de método de pago."); return; }
-    setError(""); setLoading(true);
+  const cargarTipos = async () => {
+
     try {
-      await metodoPagoService.create({
-        id_ciudadano: ciudadanoId,
-        saldo: parseFloat(saldoInicial) || 0,
-        metodopago: { id: parseInt(tipoSeleccionado) },
-      });
+
+      const data =
+        await metodoPagoService.getAllTipos();
+
+      setTipos(data);
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement
+    >
+  ) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
+
+    e.preventDefault();
+
+    setError("");
+
+    try {
+
+      setLoading(true);
+
+      const body = {
+
+        id_ciudadano: formData.id_ciudadano,
+
+        saldo: Number(formData.saldo),
+
+        monto: formData.monto
+          ? Number(formData.monto)
+          : undefined,
+
+        cargo: formData.cargo
+          ? Number(formData.cargo)
+          : undefined,
+
+        metodopago: {
+          id: Number(formData.metodopagoId),
+        },
+
+      };
+
+      console.log(body);
+
+      await metodoPagoService.create(body);
+
+      alert("Método de pago creado correctamente");
+
       navigate("/metodos-pago");
+
     } catch (e: any) {
-      setError(e.response?.data?.message || "Error al crear método de pago.");
-    } finally { setLoading(false); }
+
+      console.error(e);
+
+      setError(
+        e.response?.data?.message ||
+        "Error al crear método de pago"
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8">
-      <button onClick={() => navigate("/metodos-pago")} className="mb-4 text-sm text-primary hover:underline">
-        ← Volver
-      </button>
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Agregar Método de Pago</h1>
+    
 
-      <form onSubmit={handleSubmit}
-        className="rounded-lg border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark space-y-4">
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      
+                    <button onClick={() => navigate("/metodos-pago")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
+
+      <h1 className="mb-8 text-3xl font-bold text-gray-800 dark:text-white">
+        Agregar Método de Pago
+      </h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-xl border border-stroke bg-white p-8 shadow-sm dark:border-strokedark dark:bg-boxdark"
+      >
+
+        {/* ID CIUDADANO */}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-white">Tipo de método *</label>
-          <select value={tipoSeleccionado} required
-            onChange={(e) => setTipoSeleccionado(e.target.value)}
-            className="w-full rounded border border-stroke px-4 py-2 text-sm dark:border-strokedark dark:bg-boxdark dark:text-white">
-            <option value="">Seleccionar tipo...</option>
-            {tipos.map(t => (
-              <option key={t.id} value={t.id}>{t.tipo}</option>
+
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-white">
+            ID Ciudadano
+          </label>
+
+          <input
+            type="text"
+            name="id_ciudadano"
+            value={formData.id_ciudadano}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-stroke px-4 py-3 dark:border-strokedark dark:bg-boxdark dark:text-white"
+          />
+
+        </div>
+
+        {/* SALDO */}
+
+        <div>
+
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-white">
+            Saldo *
+          </label>
+
+          <input
+            type="number"
+            name="saldo"
+            value={formData.saldo}
+            onChange={handleChange}
+            required
+            min={0}
+            className="w-full rounded-lg border border-stroke px-4 py-3 dark:border-strokedark dark:bg-boxdark dark:text-white"
+          />
+
+        </div>
+
+        {/* MONTO */}
+
+        <div>
+
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-white">
+            Monto
+          </label>
+
+          <input
+            type="number"
+            name="monto"
+            value={formData.monto}
+            onChange={handleChange}
+            min={5000}
+            max={500000}
+            className="w-full rounded-lg border border-stroke px-4 py-3 dark:border-strokedark dark:bg-boxdark dark:text-white"
+          />
+
+        </div>
+
+        {/* CARGO */}
+
+        <div>
+
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-white">
+            Cargo
+          </label>
+
+          <input
+            type="number"
+            name="cargo"
+            value={formData.cargo}
+            onChange={handleChange}
+            min={0}
+            className="w-full rounded-lg border border-stroke px-4 py-3 dark:border-strokedark dark:bg-boxdark dark:text-white"
+          />
+
+        </div>
+
+        {/* MÉTODO DE PAGO */}
+
+        <div>
+
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-white">
+            Tipo de método *
+          </label>
+
+          <select
+            name="metodopagoId"
+            value={formData.metodopagoId}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-stroke px-4 py-3 dark:border-strokedark dark:bg-boxdark dark:text-white"
+          >
+
+            <option value="">
+              Seleccionar tipo...
+            </option>
+
+            {tipos.map((tipo) => (
+
+              <option
+                key={tipo.id}
+                value={tipo.id}
+              >
+
+                {tipo.tipo}
+
+              </option>
             ))}
+
           </select>
-          {tipos.length === 0 && (
-            <p className="mt-1 text-xs text-yellow-500">
-              No hay tipos disponibles.{" "}
-              <button type="button" onClick={() => navigate("/metodos-pago/tipos")}
-                className="underline">Crear tipos aquí</button>
-            </p>
-          )}
+
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-white">Saldo inicial</label>
-          <input type="number" value={saldoInicial} min={0}
-            onChange={(e) => setSaldoInicial(e.target.value)}
-            className="w-full rounded border border-stroke px-4 py-2 text-sm dark:border-strokedark dark:bg-boxdark dark:text-white" />
-        </div>
+        {/* ERROR */}
 
-        {error && <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-600">{error}</div>}
+        {error && (
 
-        <button type="submit" disabled={loading}
-          className="w-full rounded bg-primary py-2.5 text-sm font-medium text-white hover:bg-opacity-90 disabled:opacity-60">
-          {loading ? "Guardando..." : "Agregar Método de Pago"}
+          <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-600">
+
+            {error}
+
+          </div>
+        )}
+
+        {/* BOTÓN */}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-primary py-3 text-sm font-medium text-white hover:bg-opacity-90 disabled:opacity-60"
+        >
+
+          {loading
+            ? "Guardando..."
+            : "Agregar Método de Pago"}
+
         </button>
+
       </form>
+
     </div>
   );
 }

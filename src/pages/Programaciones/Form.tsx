@@ -20,7 +20,7 @@ const FormProgramacion = () => {
         const cargarDatos = async () => {
             try {
                 const [rutasData, busesData] = await Promise.all([
-                    rutaService.getRutas(),
+                    rutaService.getAll(),
                     busService.getBuses(),
                 ]);
                 setRutas(rutasData);

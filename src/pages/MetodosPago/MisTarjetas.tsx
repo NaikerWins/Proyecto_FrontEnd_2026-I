@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { metodoPagoService } from "../../services/metodoPagoService";
-import { MetodoPagoCiudadano } from "../../models/MetodoPago";
+import { MetodoPagoCiudadano } from "../../models/metodoPagoCiudadano";
 
 export default function MisTarjetas() {
   const [tarjetas, setTarjetas] = useState<MetodoPagoCiudadano[]>([]);
@@ -44,12 +44,19 @@ export default function MisTarjetas() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
+      
       <div className="flex items-center justify-between mb-6">
+              <button onClick={() => navigate("/")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
+
+
+
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Mis Métodos de Pago</h1>
         <button onClick={() => navigate("/metodos-pago/crear")}
           className="rounded bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-opacity-90">
           + Agregar método
         </button>
+        
+      
       </div>
 
       {tarjetas.length === 0 ? (
@@ -88,9 +95,11 @@ export default function MisTarjetas() {
               </div>
 
               <div className="flex gap-2 mt-3">
-                <button onClick={() => navigate(`/metodos-pago/${t.id}/recargar`)}
-                  className="flex-1 rounded bg-green-500 py-2 text-sm font-medium text-white hover:bg-green-600">
-                  💰 Recargar
+  <button
+    onClick={() => navigate(`/metodos-pago/${t.id}/recargar`)}
+    className="flex-1 rounded border border-green-700 bg-green-500 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-600"
+  >
+    💰 Recargar
                 </button>
                 <button onClick={() => eliminar(t.id)}
                   className="rounded border border-red-300 px-4 py-2 text-sm text-red-500 hover:bg-red-50">

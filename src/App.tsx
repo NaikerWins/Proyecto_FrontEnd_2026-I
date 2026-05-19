@@ -3,9 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-import CreateRuta from "./pages/Rutas/Create";
-import ParaderosList from "./pages/Paraderos/List";
-import CreateParadero from "./pages/Paraderos/Create";
+import CreateRuta from "./pages/Rutas/create";
+import ParaderosList from "./pages/Paraderos/list";
+import CreateParadero from "./pages/Paraderos/create";
 import CreateNodo from "./pages/Nodos/Create";
 import ProgramacionesList from "./pages/Programaciones/List";
 import CreateProgramacion from "./pages/Programaciones/Create";
