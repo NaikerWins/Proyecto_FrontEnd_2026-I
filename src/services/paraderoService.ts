@@ -1,5 +1,6 @@
-import { Paradero, ParaderoCercano } from "../models/Paradero";
 import apiNest from "../interceptors/axiosNestInterceptor";
+import { ParaderoCercano } from "../models/Paradero";
+import { Paradero } from "../models/Ruta";
 
 const API_URL = "/paraderos";
 
