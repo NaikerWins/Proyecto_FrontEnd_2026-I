@@ -60,7 +60,7 @@ const TendenciaIncidentes = () => {
             const response =
                 await reporteService.getTendenciaIncidentes(
                     meses,
-                    empresaId || undefined
+                    //empresaId || undefined
                 );
 
             setDatos(response);
