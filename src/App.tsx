@@ -26,10 +26,9 @@ import Historial from "./pages/Boletos/Historial";
 import Loader from './common/Loader';
 import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
 import CreateMetodoPago from "./pages/MetodosPago/Create";
-import RecargarMetodoPago from "./pages/MetodosPago/Recargar";
 import TiposList from "./pages/MetodosPago/TiposList";
-import ListConductores from "./pages/Conductores/ListConductores";
-import CreateConductor from "./pages/Conductores/CreateConductor";
+import ListConductores from "./pages/Conductores/list";
+import CreateConductor from "./pages/Conductores/create";
 import {
   administrationRoutes,
   generalRoutes,
