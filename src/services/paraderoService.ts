@@ -15,6 +15,12 @@ export const paraderoService = {
   getAll: async (): Promise<Paradero[]> => {
     const res = await apiNest.get<Paradero[]>(API_URL);
     return res.data;
+
+  },
+
+  getParaderos: async () => {
+    const res = await apiNest.get(API_URL);
+    return res.data;
   },
 
   getCercanos: async (latitud: number, longitud: number): Promise<ParaderoCercano[]> => {

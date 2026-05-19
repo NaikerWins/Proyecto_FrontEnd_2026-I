@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { metodoPagoService } from "../../services/metodoPagoService";
 import { MetodoPago } from "../../models/MetodoPago";
-
+import { useNavigate } from "react-router-dom";
 const TIPOS_SUGERIDOS = ["prepagado", "debito", "credito", "efectivo"];
 
 export default function TiposList() {
@@ -9,6 +9,8 @@ export default function TiposList() {
   const [nuevoTipo, setNuevoTipo] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+    const navigate = useNavigate();
+  
 
   useEffect(() => { cargar(); }, []);
 
@@ -30,6 +32,8 @@ export default function TiposList() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
+                    <button onClick={() => navigate("/metodos-pago")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
+
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Tipos de Métodos de Pago</h1>
 
       {/* Tipos sugeridos */}

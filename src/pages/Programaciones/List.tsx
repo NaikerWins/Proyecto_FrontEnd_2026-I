@@ -67,7 +67,7 @@ const ListProgramaciones: React.FC = () => {
                     </p>
                 </div>
                 <button
-                    onClick={() => navigate('/programaciones/create')}
+                    onClick={() => navigate('/programaciones/crear')}
                     className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-center font-medium text-white hover:bg-opacity-90 transition-all"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ const ListProgramaciones: React.FC = () => {
                         <div>
                             <p className="text-sm text-gray-500">Programadas</p>
                             <p className="text-xl font-bold text-black dark:text-white">
-                                {programaciones.filter(p => p.estado === 'programado').length}
+                                {programaciones.filter(p => p.estado === 'activa').length}
                             </p>
                         </div>
                     </div>

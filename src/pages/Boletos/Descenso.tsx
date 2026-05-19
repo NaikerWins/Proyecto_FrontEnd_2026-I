@@ -120,9 +120,24 @@ export default function Descenso() {
 
               {boletos.map((b) => (
 
-                <option key={b.id} value={b.id}>
-                  #{b.id}
-                </option>
+                <option
+  key={b.id}
+  value={b.id}
+>
+
+  Boleto #{b.id}
+
+  {" | "}
+
+  Ruta:
+  {b.programacion?.ruta?.nombre || "Sin ruta"}
+
+  {" | "}
+
+  Bus:
+  {b.programacion?.bus?.placa || "Sin bus"}
+
+</option>
 
               ))}
 
