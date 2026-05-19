@@ -1,5 +1,5 @@
 export interface AbordajeRequest {
-  ciudadano_id: number;
+  ciudadano_id: string;
   programacion_id: number;
   metodo_pago_id: number;
   paradero_abordaje_id: number;

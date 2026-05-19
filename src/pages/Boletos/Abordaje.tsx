@@ -103,7 +103,7 @@ export default function Abordaje() {
     try {
 
       const res = await boletoService.abordaje({
-        ciudadano_id: parseInt(form.ciudadano_id),
+        ciudadano_id: form.ciudadano_id,
         programacion_id: parseInt(form.programacion_id),
         metodo_pago_id: parseInt(form.metodo_pago_id),
         paradero_abordaje_id: parseInt(

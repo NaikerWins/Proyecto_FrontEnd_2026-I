@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { boletoService } from '../../services/boletoService';
 import { HistorialViaje } from '../../models/Historial';
+import { useNavigate } from 'react-router-dom';
 // Iconos personalizados para abordaje/descenso
 const iconAbordaje = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -17,6 +18,7 @@ const iconDescenso = new L.Icon({
   iconAnchor: [12, 41],
 });
 
+
 const iconNormal = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
   iconSize: [25, 41],
@@ -26,11 +28,12 @@ const iconNormal = new L.Icon({
 export default function Historial() {
   const [viajes, setViajes] = useState<HistorialViaje[]>([]);
   const [selected, setSelected] = useState<HistorialViaje | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Obtener el id del usuario logueado
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const ciudadanoId = user?.id.toString();;
+    const ciudadanoId = user?.id.toString();
     if (ciudadanoId) {
       boletoService.getHistorial(ciudadanoId).then(setViajes);
     }
@@ -123,6 +126,13 @@ const centro: [number, number] =
   // Vista de lista
   return (
     <div className="p-4">
+      <button
+        onClick={() => navigate("/")}
+        className="mb-4 text-sm text-primary hover:underline"
+      >
+        ← Volver
+      </button>
+      
       <h1 className="text-2xl font-bold mb-6 dark:text-white">Historial de Viajes</h1>
       {viajes.length === 0 ? (
         <p className="text-gray-500">Aún no has realizado viajes completados.</p>
