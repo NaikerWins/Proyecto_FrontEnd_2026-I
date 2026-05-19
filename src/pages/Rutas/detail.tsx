@@ -24,7 +24,7 @@ const DetailRuta: React.FC = () => {
     const fetchRuta = async (rutaId: number) => {
         try {
             const [rutaData, tiempoData] = await Promise.all([
-                rutaService.getRutaById(rutaId),
+                rutaService.getById(rutaId),
                 rutaService.getTiempoTotal(rutaId),
             ]);
 
