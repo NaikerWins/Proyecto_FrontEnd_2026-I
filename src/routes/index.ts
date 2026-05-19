@@ -77,6 +77,10 @@ const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
 const CreateRuta = lazy(() => import('../pages/Rutas/create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
+const ListConductores = lazy(() => import('../pages/Conductores/list'));
+const CreateConductor = lazy(() => import('../pages/Conductores/create'));
+const UpdateConductor = lazy(() => import('../pages/Conductores/update'));
+
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
 export const administrationRoutes = [
   {
@@ -187,6 +191,21 @@ export const generalRoutes = [
     path: '/buses/editar/:id', 
     title: 'Update Bus', 
     component: UpdateBus 
+  },
+  { 
+    path: '/conductores', 
+    title: 'Conductores List', 
+    component: ListConductores 
+  },
+  { 
+    path: '/conductores/crear', 
+    title: 'Create Conductor', 
+    component: CreateConductor 
+  },
+  { 
+    path: '/conductores/editar/:id', 
+    title: 'Update Conductor', 
+    component: UpdateConductor 
   },
   { 
     path: '/paraderos', 
@@ -458,6 +477,11 @@ export const transporteRoutes = [
     path: '/paraderos/editar/:id', 
     title: 'Update Paradero', 
     component: UpdateParadero 
+  },
+  { 
+    path: '/incidentes', 
+    title: 'Detail Incidente', 
+    component: ListIncidentes 
   },
   { 
     path: '/incidentes/bus/:busId', 

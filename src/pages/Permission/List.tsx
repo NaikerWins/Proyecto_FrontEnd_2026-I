@@ -5,7 +5,7 @@ import { Permission } from "../../models/Permission";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const METHODS = ["GET", "POST", "PUT", "DELETE"];
+const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const TYPES = ["READ", "WRITE", "EDIT", "DELETE"];
 
 const emptyForm = { url: "", method: "GET", module: "", type: "READ", model: "" };
