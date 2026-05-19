@@ -73,8 +73,8 @@ const UpdateEmpresa = lazy(() => import('../pages/Empresas/update'));
 const ListTurnos = lazy(() => import('../pages/Turnos/list'));
 const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 
-const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
-const CreateRuta = lazy(() => import('../pages/Rutas/create'));
+const ListRutas = lazy(() =>  import('../pages/Rutas/List'));
+const CreateRuta = lazy(() => import('../pages/Rutas/Create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
