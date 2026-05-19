@@ -1,11 +1,12 @@
-import { Mpc } from "../models/metodoPagoCiudadano";
+
 import api from "../interceptors/busesInterceptor";
+import { MetodoPagoCiudadano } from "../models/metodoPagoCiudadano";
 
 const API_URL = "/metodospagociudadano";
 
-class MpcService {
+class MetodoPagoCiudadanoService {
 
-    async getMpc(): Promise<Mpc[]> {
+    async getMpc(): Promise<MetodoPagoCiudadano[]> {
         try {
             const response = await api.get(API_URL);
             return response.data;
@@ -15,9 +16,9 @@ class MpcService {
         }
     }
 
-    async getMpcById(id: string): Promise<Mpc | null> {
+    async getMpcById(id: string): Promise<MetodoPagoCiudadano | null> {
         try {
-            const response = await api.get<Mpc>(`${API_URL}/${id}`);
+            const response = await api.get<MetodoPagoCiudadano>(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
             console.error("Método de pago del usuario no encontrado:", error);
@@ -28,9 +29,9 @@ class MpcService {
     /**
      * Crear nuevo mpc
      */
-    async createMpc(mpc: Omit<Mpc, "id">): Promise<Mpc | null> {
+    async createMpc(mpc: Omit<MetodoPagoCiudadano, "id">): Promise<MetodoPagoCiudadano | null> {
         try {
-            const response = await api.post<Mpc>(API_URL, mpc);
+            const response = await api.post<MetodoPagoCiudadano>(API_URL, mpc);
             return response.data;
         } catch (error) {
             console.error("Error al crear el método de pago del ciudadano:", error);
@@ -40,9 +41,9 @@ class MpcService {
 
     //Actualizar 
 
-    async updateMpc(id: string, mpc: Partial<Mpc>): Promise<Mpc | null> {
+    async updateMpc(id: string, mpc: Partial<MetodoPagoCiudadano>): Promise<MetodoPagoCiudadano | null> {
         try {
-            const response = await api.patch<Mpc>(`${API_URL}/${id}`, mpc);
+            const response = await api.patch<MetodoPagoCiudadano>(`${API_URL}/${id}`, mpc);
             return response.data;
         } catch (error) {
             console.error("Error al actualizar el método de pago del ciudadano:", error);
@@ -81,9 +82,9 @@ class MpcService {
         }
     }
 
-    async getMpcByCiudadano(ciudadano_id: string): Promise<Mpc[]> {
+    async getMpcByCiudadano(ciudadano_id: string): Promise<MetodoPagoCiudadano[]> {
     try {
-        const response = await api.get<Mpc[]>(`${API_URL}/ciudadano/${ciudadano_id}`);
+        const response = await api.get<MetodoPagoCiudadano[]>(`${API_URL}/ciudadano/${ciudadano_id}`);
         return response.data;
     } catch (error) {
         console.error('Error al obtener métodos de pago:', error);
@@ -93,4 +94,4 @@ class MpcService {
 
 }
 
-export const mpcService = new MpcService();
+export const mpcService = new MetodoPagoCiudadanoService();

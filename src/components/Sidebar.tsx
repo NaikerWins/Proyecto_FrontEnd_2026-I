@@ -200,7 +200,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       pathname.includes('/boletos/abordaje'),
                     )}
                   >
-                    Abordaje
+                   Boleto Abordaje
                   </NavLink>
                 </li>
 
@@ -211,7 +211,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       pathname.includes('/boletos/descenso'),
                     )}
                   >
-                    Descenso
+                    Boleto Descenso
                   </NavLink>
                 </li>
 
@@ -255,7 +255,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       pathname.includes('/boletos/historial'),
                     )}
                   >
-                    Mis viajes
+                    Boleto Historial
                   </NavLink>
                 </li>
               </ul>

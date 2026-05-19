@@ -20,7 +20,7 @@ export default function CreateProgramacion() {
     setError("");
     setLoading(true);
     try {
-      await programacionService.create({
+      await programacionService.createProgramacion({
         bus_id: parseInt(form.bus_id),
         conductor_id: parseInt(form.conductor_id),
         capacidad_maxima: parseInt(form.capacidad_maxima),
