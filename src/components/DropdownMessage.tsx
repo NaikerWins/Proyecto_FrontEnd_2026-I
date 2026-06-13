@@ -39,7 +39,7 @@ const DropdownMessage = () => {
   });
 
   return (
-    <li className="relative" x-data="{ dropdownOpen: false, notifying: true }">
+    <li className="relative">
       <Link
         ref={trigger}
         onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -77,12 +77,9 @@ const DropdownMessage = () => {
         </svg>
       </Link>
 
-      {/* <!-- Dropdown Start --> */}
       <div
         ref={dropdown}
-        onFocus={() => setDropdownOpen(true)}
-        onBlur={() => setDropdownOpen(false)}
-        className={`absolute -right-16 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${
+        className={`absolute -right-16 mt-2.5 flex w-80 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 ${
           dropdownOpen === true ? 'block' : 'hidden'
         }`}
       >
@@ -90,7 +87,7 @@ const DropdownMessage = () => {
           <h5 className="text-sm font-medium text-bodydark2">Messages</h5>
         </div>
 
-        <ul className="flex h-auto flex-col overflow-y-auto">
+        <ul className="flex flex-col overflow-y-auto" style={{ maxHeight: '400px' }}>
           <li>
             <Link
               className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
@@ -99,11 +96,8 @@ const DropdownMessage = () => {
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserTwo} alt="User" />
               </div>
-
               <div>
-                <h6 className="text-sm font-medium text-black dark:text-white">
-                  Mariya Desoja
-                </h6>
+                <h6 className="text-sm font-medium text-black dark:text-white">Mariya Desoja</h6>
                 <p className="text-sm">I like your confidence 💪</p>
                 <p className="text-xs">2min ago</p>
               </div>
@@ -117,11 +111,8 @@ const DropdownMessage = () => {
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserOne} alt="User" />
               </div>
-
               <div>
-                <h6 className="text-sm font-medium text-black dark:text-white">
-                  Robert Jhon
-                </h6>
+                <h6 className="text-sm font-medium text-black dark:text-white">Robert Jhon</h6>
                 <p className="text-sm">Can you share your offer?</p>
                 <p className="text-xs">10min ago</p>
               </div>
@@ -135,11 +126,8 @@ const DropdownMessage = () => {
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserThree} alt="User" />
               </div>
-
               <div>
-                <h6 className="text-sm font-medium text-black dark:text-white">
-                  Henry Dholi
-                </h6>
+                <h6 className="text-sm font-medium text-black dark:text-white">Henry Dholi</h6>
                 <p className="text-sm">I cam across your profile and...</p>
                 <p className="text-xs">1day ago</p>
               </div>
@@ -153,12 +141,9 @@ const DropdownMessage = () => {
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserFour} alt="User" />
               </div>
-
               <div>
-                <h6 className="text-sm font-medium text-black dark:text-white">
-                  Cody Fisher
-                </h6>
-                <p className="text-sm">I’m waiting for you response!</p>
+                <h6 className="text-sm font-medium text-black dark:text-white">Cody Fisher</h6>
+                <p className="text-sm">I'm waiting for you response!</p>
                 <p className="text-xs">5days ago</p>
               </div>
             </Link>
@@ -171,11 +156,8 @@ const DropdownMessage = () => {
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserTwo} alt="User" />
               </div>
-
               <div>
-                <h6 className="text-sm font-medium text-black dark:text-white">
-                  Mariya Desoja
-                </h6>
+                <h6 className="text-sm font-medium text-black dark:text-white">Mariya Desoja</h6>
                 <p className="text-sm">I like your confidence 💪</p>
                 <p className="text-xs">2min ago</p>
               </div>
@@ -183,7 +165,6 @@ const DropdownMessage = () => {
           </li>
         </ul>
       </div>
-      {/* <!-- Dropdown End --> */}
     </li>
   );
 };

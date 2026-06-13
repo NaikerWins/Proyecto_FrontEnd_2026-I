@@ -43,7 +43,42 @@ class ReporteService {
     }
 }
 
+    async getRutas(): Promise<any[]> {
+        try {
+
+            const response = await api.get('/rutas');
+
+            return response.data;
+
+        } catch (error) {
+
+            console.error('Error al obtener rutas:', error);
+
+            return [];
+        }
+    }
+
+    async getEmpresas(): Promise<any[]> {
+    try {
+
+        const response = await api.get('/empresas');
+
+        return response.data;
+
+    } catch (error) {
+
+        console.error(
+            'Error al obtener empresas:',
+            error
+        );
+
+        return [];
+    }
+}
+
 
 }
 
 export const reporteService = new ReporteService();
+
+

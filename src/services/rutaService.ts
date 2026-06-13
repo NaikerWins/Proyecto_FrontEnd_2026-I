@@ -28,4 +28,10 @@ export const rutaService = {
   remove: async (id: number): Promise<void> => {
     await apiNest.delete(`${API_URL}/${id}`);
   },
+  estimarLlegada: async (rutaId: number, paraderoId: number, busId?: number) => {
+  const res = await apiNest.get(`/rutas/estimar-llegada/${rutaId}/${paraderoId}`, { 
+    params: busId ? { busId } : {} 
+  });
+  return res;
+},
 };

@@ -23,6 +23,10 @@ import ConfirmacionRecarga from '../pages/Recargas/ConfirmacionRecarga';
 import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
 import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
 import TendenciaIncidentes from '../pages/Reportes/TendenciaIncidentes';
+import SeguimientoRuta from '../pages/Monitoreo/SeguimientoRuta';
+import PanelSupervisor from '../pages/Monitoreo/PanelSupervisor';
+import ActivarNotificacion from '../pages/Monitoreo/ActivarNotificacion';
+import ConfiguracionClima from '../pages/Monitoreo/ConfiguracionClima';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -73,17 +77,23 @@ const UpdateEmpresa = lazy(() => import('../pages/Empresas/update'));
 const ListTurnos = lazy(() => import('../pages/Turnos/list'));
 const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 
-const ListRutas = lazy(() =>  import('../pages/Rutas/List'));
-const CreateRuta = lazy(() => import('../pages/Rutas/Create'));
+const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
+const CreateRuta = lazy(() => import('../pages/Rutas/create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
 export const administrationRoutes = [
   {
+  path: '/panel',
+  title: 'Panel de Control de Flota',
+  component: PanelSupervisor,
+},
+  {
     path: '/RolePermission/list',
     title: 'list RolePermission',
     component: RolePermissionPage,
   },
+
   {
     path: '/permission/list',
     title: 'LIST permission',
@@ -98,12 +108,15 @@ export const administrationRoutes = [
     path: '/roles/crear',
     title: 'Create Role',
     component: CreateRole,
-  },
+  }
+  ,
   {
     path: '/roles/editar/:id',
     title: 'Update Role',
     component: UpdateRole,
   },
+  
+
   {
     path: '/empresas',
     title: 'Empresas List',
@@ -173,6 +186,21 @@ export const administrationRoutes = [
 
 
 export const generalRoutes = [
+  {
+  path: '/monitoreo/ruta/:rutaId',
+  title: 'Seguimiento de Ruta',
+  component: SeguimientoRuta,
+},
+{
+  path: '/notificacion/bus',
+  title: 'Notificación de Bus Cercano',
+  component: ActivarNotificacion,
+},
+{
+  path: '/perfil/clima',
+  title: 'Configuración de Clima',
+  component: ConfiguracionClima,
+},
   { 
     path: '/buses', 
     title: 'Buses List', 
