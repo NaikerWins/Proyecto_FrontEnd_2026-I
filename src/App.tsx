@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-import CreateRuta from "./pages/Rutas/create";
 import ParaderosList from "./pages/Paraderos/list";
 import CreateParadero from "./pages/Paraderos/create";
 import CreateNodo from "./pages/Nodos/Create";
@@ -18,24 +17,35 @@ import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPassword from './pages/Authentication/ResetPassword';
 import Horarios from './pages/Programaciones/Horarios';
 import Unauthorized from './pages/Unauthorized';
-import RutasList from "./pages/Rutas/list";
-import RutaParaderos from "./pages/Rutas/Paraderos";
-import ParaderosCercanos from "./pages/Paraderos/Cercanos";
-import Abordaje from "./pages/Boletos/Abordaje";
-import Descenso from "./pages/Boletos/Descenso";
-import Historial from "./pages/Boletos/Historial";
+import RutasList from './pages/Rutas/list';
+import RutaParaderos from './pages/Rutas/Paraderos';
+import ParaderosCercanos from './pages/Paraderos/Cercanos';
+import Abordaje from './pages/Boletos/Abordaje';
+import Descenso from './pages/Boletos/Descenso';
+import Historial from './pages/Boletos/Historial';
 import Loader from './common/Loader';
 import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
 import CreateMetodoPago from "./pages/MetodosPago/Create";
 import TiposList from "./pages/MetodosPago/TiposList";
 import ListConductores from "./pages/Conductores/list";
 import CreateConductor from "./pages/Conductores/create";
+import ListGrupos from "./pages/Grupos/ListGrupos";
+import MisGrupos from "./pages/Grupos/MisGrupos";
+import DetalleGrupo from "./pages/Grupos/DetalleGrupo";
+import PqrsPage from "./pages/Pqrs/Pqrs";
+import AgendarCita from "./pages/Citas/AgendarCita";
+import CitaCancelada from "./pages/Citas/CitaCancelada";
+import AdminPqrs from "./pages/Pqrs/AdminPqrs";
+import Perfil from "./pages/Perfil/Perfil";
+
 import {
   administrationRoutes,
   generalRoutes,
 } from './routes';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdministrationRoute from './components/Auth/AdministrationRoute';
+import CreateRuta from './pages/Rutas/create';
+import { MensajeriaProvider } from './context/MensajeriaContext';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -62,7 +72,7 @@ function App() {
   }, []);
 
   const routeElements = (
-    <>
+    <MensajeriaProvider>
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -70,7 +80,7 @@ function App() {
       />
       <Routes>
         <Route path="/auth/signin" element={<SignInPage />} />
-        <Route path="/auth/signup" element={<SignUp />}/>
+        <Route path="/auth/signup" element={<SignUp />} />
         <Route path="/rutas" element={<RutasList />} />
         <Route path="/rutas/:id/paraderos" element={<RutaParaderos />} />
         <Route path="/paraderos/cercanos" element={<ParaderosCercanos />} />
@@ -95,6 +105,15 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/conductores" element={<ListConductores />} />
         <Route path="/conductores/crear" element={<CreateConductor />} />
+        <Route path="/grupos" element={<ListGrupos />} />
+        <Route path="/grupos/mis-grupos" element={<MisGrupos />} />
+        <Route path="/grupos/:id" element={<DetalleGrupo />} />
+        <Route path="/pqrs" element={<PqrsPage />} />
+        <Route path="/citas/agendar" element={<AgendarCita />} />
+        <Route path="/cita-cancelada" element={<CitaCancelada />} />
+        <Route path="/pqrs/admin" element={<AdminPqrs />} />
+        <Route path="/perfil" element={<Perfil />} />
+        
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />
@@ -131,9 +150,8 @@ function App() {
             </Route>
           </Route>
         </Route>
-
       </Routes>
-    </>
+    </MensajeriaProvider>
   );
   return loading ? (
     <Loader />

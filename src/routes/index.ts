@@ -28,6 +28,8 @@ import PanelSupervisor from '../pages/Monitoreo/PanelSupervisor';
 import ActivarNotificacion from '../pages/Monitoreo/ActivarNotificacion';
 import ConfiguracionClima from '../pages/Monitoreo/ConfiguracionClima';
 import Horarios from '../pages/Programaciones/Horarios';
+import MensajesPage from '../pages/mensajes';
+// import GruposPage from '../pages/grupos';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -52,7 +54,6 @@ const UpdateRole = lazy(() => import('../pages/Roles/Update'));
 const UserRolesList = lazy(() => import('../pages/UserRoles/List'));
 const AssignRole = lazy(() => import('../pages/UserRoles/AssignRole'));
 
-
 const UserPasswordsList = lazy(() => import('../pages/Passwords/List'));
 const CreatePassword = lazy(() => import('../pages/Passwords/Create'));
 const ListAddresses = lazy(() => import('../pages/addresses/List'));
@@ -66,7 +67,6 @@ const UpdateBus = lazy(() => import('../pages/Buses/update'));
 const ListParaderos = lazy(() => import('../pages/Paraderos/list'));
 const CreateParadero = lazy(() => import('../pages/Paraderos/create'));
 
-
 const ListIncidentes = lazy(() => import('../pages/Incidentes/list'));
 const CreateIncidente = lazy(() => import('../pages/Incidentes/create'));
 const DetailIncidente = lazy(() => import('../pages/Incidentes/detail'));
@@ -78,7 +78,7 @@ const UpdateEmpresa = lazy(() => import('../pages/Empresas/update'));
 const ListTurnos = lazy(() => import('../pages/Turnos/list'));
 const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 
-const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
+const ListRutas = lazy(() => import('../pages/Rutas/list'));
 const CreateRuta = lazy(() => import('../pages/Rutas/create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
@@ -120,8 +120,6 @@ export const administrationRoutes = [
     title: 'Update Role',
     component: UpdateRole,
   },
-  
-
   {
     path: '/empresas',
     title: 'Empresas List',
@@ -143,6 +141,12 @@ export const administrationRoutes = [
     component: UserRolesList,
   },
   {
+    ath: '/mensajes',
+    title: 'Mensajes',
+    component: MensajesPage,
+  },
+  //{ path: '/grupos', title: 'Grupos', component: GruposPage },
+  {
     path: '/user-roles/:userId/asignar',
     title: 'Assign Role',
     component: AssignRole,
@@ -162,13 +166,17 @@ export const administrationRoutes = [
     title: 'Users List',
     component: ListUsers,
   },
-  { path: '/programaciones', 
-    title: 'Programaciones', 
-    component: ListProgramaciones },
+  {
+    path: '/programaciones',
+    title: 'Programaciones',
+    component: ListProgramaciones,
+  },
 
-  { path: '/programaciones/create', 
-    title: 'Crear Programacion', 
-    component: FormProgramacion },
+  {
+    path: '/programaciones/create',
+    title: 'Crear Programacion',
+    component: FormProgramacion,
+  },
 
   {
     path: '/reportes/ingresopormetodo',
@@ -188,7 +196,6 @@ export const administrationRoutes = [
     component: TendenciaIncidentes,
   },
 ];
-
 
 export const generalRoutes = [
   {
@@ -211,80 +218,80 @@ export const generalRoutes = [
     title: 'Buses List', 
     component: ListBuses 
   },
-  { 
-    path: '/buses/crear', 
-    title: 'Create Bus', 
-    component: CreateBus 
+  {
+    path: '/buses/crear',
+    title: 'Create Bus',
+    component: CreateBus,
   },
-  { 
-    path: '/buses/editar/:id', 
-    title: 'Update Bus', 
-    component: UpdateBus 
+  {
+    path: '/buses/editar/:id',
+    title: 'Update Bus',
+    component: UpdateBus,
   },
-  { 
-    path: '/conductores', 
-    title: 'Conductores List', 
-    component: ListConductores 
+  {
+    path: '/conductores',
+    title: 'Conductores List',
+    component: ListConductores,
   },
-  { 
-    path: '/conductores/crear', 
-    title: 'Create Conductor', 
-    component: CreateConductor 
+  {
+    path: '/conductores/crear',
+    title: 'Create Conductor',
+    component: CreateConductor,
   },
-  { 
-    path: '/conductores/editar/:id', 
-    title: 'Update Conductor', 
-    component: UpdateConductor 
+  {
+    path: '/conductores/editar/:id',
+    title: 'Update Conductor',
+    component: UpdateConductor,
   },
-  { 
-    path: '/paraderos', 
-    title: 'Paraderos List', 
-    component: ListParaderos 
+  {
+    path: '/paraderos',
+    title: 'Paraderos List',
+    component: ListParaderos,
   },
-  { 
-    path: '/paraderos/crear', 
-    title: 'Create Paradero', 
-    component: CreateParadero 
+  {
+    path: '/paraderos/crear',
+    title: 'Create Paradero',
+    component: CreateParadero,
   },
-  { 
-    path: '/incidentes/bus/:busId', 
-    title: 'Incidentes Bus', 
-    component: ListIncidentes 
+  {
+    path: '/incidentes/bus/:busId',
+    title: 'Incidentes Bus',
+    component: ListIncidentes,
   },
-  { 
-    path: '/incidentes/crear/:busId', 
-    title: 'Create Incidente', 
-    component: CreateIncidente 
+  {
+    path: '/incidentes/crear/:busId',
+    title: 'Create Incidente',
+    component: CreateIncidente,
   },
-  { 
-    path: '/incidentes/:id', 
-    title: 'Detail Incidente', 
-    component: DetailIncidente 
+  {
+    path: '/incidentes/:id',
+    title: 'Detail Incidente',
+    component: DetailIncidente,
   },
-  { 
-    path: '/turnos', 
-    title: 'Turnos List', 
-    component: ListTurnos 
+  {
+    path: '/turnos',
+    title: 'Turnos List',
+    component: ListTurnos,
   },
-  { 
-    path: '/turnos/crear', 
-    title: 'Create Turno', 
-    component: CreateTurno 
+  {
+    path: '/turnos/crear',
+    title: 'Create Turno',
+    component: CreateTurno,
   },
-  { 
-    path: '/rutas', 
-    title: 'Rutas List', 
-    component: ListRutas 
+  {
+    path: '/rutas',
+    title: 'Rutas List',
+    component: ListRutas,
   },
-  { 
-    path: '/rutas/crear', 
-    title: 'Create Ruta', 
-    component: CreateRuta 
+  {
+    path: '/rutas/crear',
+    title: 'Create Ruta',
+    component: CreateRuta,
   },
-  { 
-    path: '/rutas/:id', 
-    title: 'Detail Ruta', 
-    component: DetailRuta 
+  {
+    path: '/rutas/:id',
+    title: 'Detail Ruta',
+    component: DetailRuta,
   },
   {
     path: '/demo',
@@ -458,94 +465,93 @@ export const generalRoutes = [
     title: 'Create Session',
     component: SessionForm,
   },
-{
+  {
     path: '/recargas',
     title: 'Recargar Tarjeta',
     component: RecargaTarjeta,
-},
-{
+  },
+  {
     path: '/recargas/confirmacion',
     title: 'Confirmacion Recarga',
     component: ConfirmacionRecarga,
-},
-{
+  },
+  {
     path: '/horario',
     title: 'Horarios',
     component: Horarios,
-},
-
+  },
 ];
 
 export const transporteRoutes = [
-  { 
-    path: '/buses', 
-    title: 'Buses List', 
-    component: ListBuses 
+  {
+    path: '/buses',
+    title: 'Buses List',
+    component: ListBuses,
   },
-  { 
-    path: '/buses/crear', 
-    title: 'Create Bus', 
-    component: CreateBus 
+  {
+    path: '/buses/crear',
+    title: 'Create Bus',
+    component: CreateBus,
   },
-  { 
-    path: '/buses/editar/:id', 
-    title: 'Update Bus', 
-    component: UpdateBus 
+  {
+    path: '/buses/editar/:id',
+    title: 'Update Bus',
+    component: UpdateBus,
   },
-  { 
-    path: '/paraderos', 
-    title: 'Paraderos List', 
-    component: ListParaderos 
+  {
+    path: '/paraderos',
+    title: 'Paraderos List',
+    component: ListParaderos,
   },
-  { 
-    path: '/paraderos/crear', 
-    title: 'Create Paradero', 
-    component: CreateParadero 
+  {
+    path: '/paraderos/crear',
+    title: 'Create Paradero',
+    component: CreateParadero,
   },
-  { 
-    path: '/incidentes', 
-    title: 'Detail Incidente', 
-    component: ListIncidentes 
+  {
+    path: '/incidentes',
+    title: 'Detail Incidente',
+    component: ListIncidentes,
   },
-  { 
-    path: '/incidentes/bus/:busId', 
-    title: 'Incidentes Bus', 
-    component: ListIncidentes 
+  {
+    path: '/incidentes/bus/:busId',
+    title: 'Incidentes Bus',
+    component: ListIncidentes,
   },
-  { 
-    path: '/incidentes/crear/:busId', 
-    title: 'Create Incidente', 
-    component: CreateIncidente 
+  {
+    path: '/incidentes/crear/:busId',
+    title: 'Create Incidente',
+    component: CreateIncidente,
   },
-  { 
-    path: '/incidentes/:id', 
-    title: 'Detail Incidente', 
-    component: DetailIncidente 
+  {
+    path: '/incidentes/:id',
+    title: 'Detail Incidente',
+    component: DetailIncidente,
   },
-  { 
-    path: '/turnos', 
-    title: 'Turnos List', 
-    component: ListTurnos 
+  {
+    path: '/turnos',
+    title: 'Turnos List',
+    component: ListTurnos,
   },
-  { 
-    path: '/turnos/crear', 
-    title: 'Create Turno', 
-    component: CreateTurno 
+  {
+    path: '/turnos/crear',
+    title: 'Create Turno',
+    component: CreateTurno,
   },
-  { 
-    path: '/rutas', 
-    title: 'Rutas List', 
-    component: ListRutas 
+  {
+    path: '/rutas',
+    title: 'Rutas List',
+    component: ListRutas,
   },
-  { 
-    path: '/rutas/crear', 
-    title: 'Create Ruta', 
-    component: CreateRuta 
+  {
+    path: '/rutas/crear',
+    title: 'Create Ruta',
+    component: CreateRuta,
   },
-  { 
-    path: '/rutas/:id', 
-    title: 'Detail Ruta', 
-    component: DetailRuta 
+  {
+    path: '/rutas/:id',
+    title: 'Detail Ruta',
+    component: DetailRuta,
   },
 ];
 

@@ -553,10 +553,4 @@ const DistribucionEtaria = () => {
     );
 };
 
-<<<<<<< HEAD
 export default DistribucionEtaria;
-  
-  
-=======
-export default DistribucionEtaria;
->>>>>>> c6297ecac3f3377b0d127170a94129c977afd458

@@ -24,6 +24,7 @@
     "@types/leaflet": "^1.9.21",
     "apexcharts": "^5.12.0",
     "axios": "^1.12.2",
+    "body-parser": "^2.2.2",
     "bootstrap": "^5.3.8",
     "firebase": "^10.7.1",
     "formik": "^2.4.6",

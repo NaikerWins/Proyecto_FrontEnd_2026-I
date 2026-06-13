@@ -228,6 +228,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                 <li>
                   <NavLink
+                    to="/panel"
+                    className={linkClass(
+                      pathname.includes('/panel'),
+                    )}
+                  >
+                    Panel
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/conductores"
                     className={linkClass(
                       pathname.includes('/conductores'),
@@ -271,6 +281,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </li>
               </ul>
 
+              {/* MENSAJERÍA */}
+              <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
+                  MENSAJERÍA
+              </h3>
+              <ul className="mb-6 flex flex-col gap-1.5">
+                  <li>
+                      <NavLink
+                          to="/mensajes"
+                          className={linkClass(pathname.startsWith('/mensajes'))}
+                      >
+                          Mensajes
+                      </NavLink>
+                  </li>
+                  <li>
+                      <NavLink
+                          to="/grupos"
+                          className={linkClass(pathname.startsWith('/grupos'))}
+                      >
+                          Grupos
+                      </NavLink>
+                  </li>
+              </ul>
+
               {/* REPORTES */}
               <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
                 REPORTES
@@ -312,6 +345,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     )}
                   >
                     Distribución Etaria
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/notificacion/bus"
+                    className={linkClass(
+                      pathname ===
+                        '/notificacion/bus',
+                    )}
+                  >
+                    Notificación Bus
                   </NavLink>
                 </li>
 
