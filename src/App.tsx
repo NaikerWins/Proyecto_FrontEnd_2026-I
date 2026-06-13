@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-import CreateRuta from "./pages/Rutas/Create";
 import ParaderosList from "./pages/Paraderos/list";
 import CreateParadero from "./pages/Paraderos/create";
 import CreateNodo from "./pages/Nodos/Create";
@@ -28,10 +27,8 @@ import Loader from './common/Loader';
 import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
 import CreateMetodoPago from "./pages/MetodosPago/Create";
 import TiposList from "./pages/MetodosPago/TiposList";
-<<<<<<< HEAD
 import ListConductores from "./pages/Conductores/list";
 import CreateConductor from "./pages/Conductores/create";
-=======
 import ListGrupos from "./pages/Grupos/ListGrupos";
 import MisGrupos from "./pages/Grupos/MisGrupos";
 import DetalleGrupo from "./pages/Grupos/DetalleGrupo";
@@ -41,13 +38,13 @@ import CitaCancelada from "./pages/Citas/CitaCancelada";
 import AdminPqrs from "./pages/Pqrs/AdminPqrs";
 import Perfil from "./pages/Perfil/Perfil";
 
->>>>>>> d176ad0 (H9-H13)
 import {
   administrationRoutes,
   generalRoutes,
 } from './routes';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdministrationRoute from './components/Auth/AdministrationRoute';
+import CreateRuta from './pages/Rutas/create';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -105,10 +102,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-<<<<<<< HEAD
         <Route path="/conductores" element={<ListConductores />} />
         <Route path="/conductores/crear" element={<CreateConductor />} />
-=======
         <Route path="/grupos" element={<ListGrupos />} />
         <Route path="/grupos/mis-grupos" element={<MisGrupos />} />
         <Route path="/grupos/:id" element={<DetalleGrupo />} />
@@ -118,7 +113,6 @@ function App() {
         <Route path="/pqrs/admin" element={<AdminPqrs />} />
         <Route path="/perfil" element={<Perfil />} />
         
->>>>>>> d176ad0 (H9-H13)
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />

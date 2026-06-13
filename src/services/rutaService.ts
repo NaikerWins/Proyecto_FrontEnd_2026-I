@@ -34,18 +34,10 @@ export const rutaService = {
   });
   return res;
 },
-<<<<<<< HEAD
-=======
-}
->>>>>>> a072db8a8e2e77dc640c944bd9a9ed34a215e57e
-
   createConNodos: async (data: any): Promise<Ruta> => {
     const res = await api.post<Ruta>(API_URL, data);
     return res.data;
 }
-<<<<<<< HEAD
-
 }
 
-=======
->>>>>>> a072db8a8e2e77dc640c944bd9a9ed34a215e57e
+
