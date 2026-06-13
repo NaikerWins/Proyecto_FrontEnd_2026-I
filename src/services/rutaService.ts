@@ -34,9 +34,11 @@ export const rutaService = {
   });
   return res;
 },
-}
 
   createConNodos: async (data: any): Promise<Ruta> => {
     const res = await api.post<Ruta>(API_URL, data);
     return res.data;
 }
+
+}
+
