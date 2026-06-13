@@ -75,7 +75,7 @@ const ListTurnos = lazy(() => import('../pages/Turnos/list'));
 const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 
 const ListRutas = lazy(() => import('../pages/Rutas/List'));
-const CreateRuta = lazy(() => import('../pages/Rutas/create'));
+const CreateRuta = lazy(() => import('../pages/Rutas/Create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
 
 const ListConductores = lazy(() => import('../pages/Conductores/list'));
