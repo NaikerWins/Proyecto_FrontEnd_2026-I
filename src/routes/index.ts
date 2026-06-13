@@ -27,6 +27,7 @@ import SeguimientoRuta from '../pages/Monitoreo/SeguimientoRuta';
 import PanelSupervisor from '../pages/Monitoreo/PanelSupervisor';
 import ActivarNotificacion from '../pages/Monitoreo/ActivarNotificacion';
 import ConfiguracionClima from '../pages/Monitoreo/ConfiguracionClima';
+import Horarios from '../pages/Programaciones/Horarios';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -64,7 +65,7 @@ const UpdateBus = lazy(() => import('../pages/Buses/update'));
 
 const ListParaderos = lazy(() => import('../pages/Paraderos/list'));
 const CreateParadero = lazy(() => import('../pages/Paraderos/create'));
-const UpdateParadero = lazy(() => import('../pages/Paraderos/update'));
+
 
 const ListIncidentes = lazy(() => import('../pages/Incidentes/list'));
 const CreateIncidente = lazy(() => import('../pages/Incidentes/create'));
@@ -80,6 +81,10 @@ const CreateTurno = lazy(() => import('../pages/Turnos/create'));
 const ListRutas = lazy(() =>  import('../pages/Rutas/list'));
 const CreateRuta = lazy(() => import('../pages/Rutas/create'));
 const DetailRuta = lazy(() => import('../pages/Rutas/detail'));
+
+const ListConductores = lazy(() => import('../pages/Conductores/list'));
+const CreateConductor = lazy(() => import('../pages/Conductores/create'));
+const UpdateConductor = lazy(() => import('../pages/Conductores/update'));
 
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
 export const administrationRoutes = [
@@ -217,6 +222,21 @@ export const generalRoutes = [
     component: UpdateBus 
   },
   { 
+    path: '/conductores', 
+    title: 'Conductores List', 
+    component: ListConductores 
+  },
+  { 
+    path: '/conductores/crear', 
+    title: 'Create Conductor', 
+    component: CreateConductor 
+  },
+  { 
+    path: '/conductores/editar/:id', 
+    title: 'Update Conductor', 
+    component: UpdateConductor 
+  },
+  { 
     path: '/paraderos', 
     title: 'Paraderos List', 
     component: ListParaderos 
@@ -225,11 +245,6 @@ export const generalRoutes = [
     path: '/paraderos/crear', 
     title: 'Create Paradero', 
     component: CreateParadero 
-  },
-  { 
-    path: '/paraderos/editar/:id', 
-    title: 'Update Paradero', 
-    component: UpdateParadero 
   },
   { 
     path: '/incidentes/bus/:busId', 
@@ -453,6 +468,11 @@ export const generalRoutes = [
     title: 'Confirmacion Recarga',
     component: ConfirmacionRecarga,
 },
+{
+    path: '/horario',
+    title: 'Horarios',
+    component: Horarios,
+},
 
 ];
 
@@ -483,9 +503,9 @@ export const transporteRoutes = [
     component: CreateParadero 
   },
   { 
-    path: '/paraderos/editar/:id', 
-    title: 'Update Paradero', 
-    component: UpdateParadero 
+    path: '/incidentes', 
+    title: 'Detail Incidente', 
+    component: ListIncidentes 
   },
   { 
     path: '/incidentes/bus/:busId', 

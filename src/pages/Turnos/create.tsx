@@ -46,7 +46,7 @@ const CreateTurno: React.FC = () => {
     const turnoFields: FormField[] = [
         { name: "conductorId", label: "Conductor", type: "select", options: conductores, required: true },
         { name: "busId", label: "Bus", type: "select", options: buses, required: true },
-        { name: "fechaProgramada", label: "Fecha y hora programada", type: "date", required: true },
+        { name: "fechaProgramada", label: "Fecha y hora programada", type: "datetime-local" as any, required: true },
         { name: "observaciones", label: "Observaciones", type: "text", multiline: true, rows: 3 },
     ];
 

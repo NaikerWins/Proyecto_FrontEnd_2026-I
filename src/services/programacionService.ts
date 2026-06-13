@@ -29,14 +29,10 @@ class ProgramacionService {
      * Crear nueva programación
      */
     async createProgramacion(programacion: Omit<Programacion, "id">): Promise<Programacion | null> {
-        try {
-            const response = await api.post<Programacion>(API_URL, programacion);
-            return response.data;
-        } catch (error) {
-            console.error("Error al crear la programacion:", error);
-            return null;
-        }
+        const response = await api.post<Programacion>(API_URL, programacion);
+        return response.data;
     }
+
 
     //Actualizar 
 

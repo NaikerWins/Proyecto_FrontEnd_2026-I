@@ -1,5 +1,6 @@
 import { Incidente, Comentario, EstadisticasIncidente } from "../models/Incidente";
 import apiNest from "../interceptors/axiosNestInterceptor";
+import Swal from "sweetalert2";
 
 const API_URL = "/incidentes";
 
@@ -43,7 +44,14 @@ class IncidenteService {
         try {
             const response = await apiNest.post<Incidente>(API_URL, incidente);
             return response.data;
-        } catch (error) {
+        } catch (error:any) {
+            console.error(error.response?.data);
+
+            Swal.fire({
+                title: "Error",
+                text: JSON.stringify(error.response?.data),
+                icon: "error",
+            });
             console.error("Error al crear incidente:", error);
             return null;
         }
@@ -56,7 +64,15 @@ class IncidenteService {
                 { estado, descripcion, gravedad }
             );
             return response.data;
-        } catch (error) {
+        } catch (error:any) {
+            console.error(error.response?.data);
+
+            Swal.fire({
+                title: "Error",
+                text: JSON.stringify(error.response?.data),
+                icon: "error",
+            });
+
             console.error("Error al actualizar incidente:", error);
             return null;
         }

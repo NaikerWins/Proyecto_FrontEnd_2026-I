@@ -16,6 +16,7 @@ import CompleteProfile from './pages/Authentication/CompleteProfile';
 import Verify2FA from './components/Auth/Verify2FA';
 import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPassword from './pages/Authentication/ResetPassword';
+import Horarios from './pages/Programaciones/Horarios';
 import Unauthorized from './pages/Unauthorized';
 import RutasList from "./pages/Rutas/list";
 import RutaParaderos from "./pages/Rutas/Paraderos";
@@ -26,10 +27,9 @@ import Historial from "./pages/Boletos/Historial";
 import Loader from './common/Loader';
 import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
 import CreateMetodoPago from "./pages/MetodosPago/Create";
-import RecargarMetodoPago from "./pages/MetodosPago/Recargar";
 import TiposList from "./pages/MetodosPago/TiposList";
-import ListConductores from "./pages/Conductores/ListConductores";
-import CreateConductor from "./pages/Conductores/CreateConductor";
+import ListConductores from "./pages/Conductores/list";
+import CreateConductor from "./pages/Conductores/create";
 import {
   administrationRoutes,
   generalRoutes,
@@ -79,25 +79,26 @@ function App() {
         <Route path="/boletos/historial" element={<Historial />} />
         <Route path="/auth/complete-profile" element={<CompleteProfile />} />
         <Route path="/metodos-pago" element={<MisTarjetas />} />
-<Route path="/metodos-pago/crear" element={<CreateMetodoPago />} />
-<Route path="/metodos-pago/:id/recargar" element={<RecargarMetodoPago />} />
-<Route path="/metodos-pago/tipos" element={<TiposList />} />
+        <Route path="/metodos-pago/crear" element={<CreateMetodoPago />} />
+        <Route path="/metodos-pago/tipos" element={<TiposList />} />
         <Route path="/auth/verify-2fa" element={<Verify2FA />} />
         <Route path="/rutas/crear" element={<CreateRuta />} />
-<Route path="/paraderos/lista" element={<ParaderosList />} />
-<Route path="/paraderos/crear" element={<CreateParadero />} />
-<Route path="/nodos/crear" element={<CreateNodo />} />
-<Route path="/programaciones" element={<ProgramacionesList />} />
-<Route path="/programaciones/crear" element={<CreateProgramacion />} />
+        <Route path="/paraderos/lista" element={<ParaderosList />} />
+        <Route path="/paraderos/crear" element={<CreateParadero />} />
+        <Route path="/nodos/crear" element={<CreateNodo />} />
+        <Route path="/programaciones" element={<ProgramacionesList />} />
+        <Route path="/horarios-rutas" element={<Horarios />} />
+        <Route path="/programaciones/crear" element={<CreateProgramacion />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-<Route path="/conductores" element={<ListConductores />} />
-<Route path="/conductores/crear" element={<CreateConductor />} />
+        <Route path="/conductores" element={<ListConductores />} />
+        <Route path="/conductores/crear" element={<CreateConductor />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />
+            <Route path="/horarios-rutas" element={<Horarios />} />
             {generalRoutes.map((routeItem, index) => {
               const { path, component: Component } = routeItem;
               return (

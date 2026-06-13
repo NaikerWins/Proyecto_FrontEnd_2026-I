@@ -1,5 +1,5 @@
 
-  import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Chart from 'react-apexcharts';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
@@ -553,6 +553,10 @@ const DistribucionEtaria = () => {
     );
 };
 
+<<<<<<< HEAD
 export default DistribucionEtaria;
   
   
+=======
+export default DistribucionEtaria;
+>>>>>>> c6297ecac3f3377b0d127170a94129c977afd458

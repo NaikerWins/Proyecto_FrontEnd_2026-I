@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Box, Button, Container, Typography,
-    Alert, Snackbar, Chip
+    Alert, Snackbar
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import GenericTable from "../../components/Generics/MUI/GenericList";
