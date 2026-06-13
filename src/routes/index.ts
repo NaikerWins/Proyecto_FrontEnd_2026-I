@@ -24,6 +24,8 @@ import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
 import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
 import TendenciaIncidentes from '../pages/Reportes/TendenciaIncidentes';
 import Horarios from '../pages/Programaciones/Horarios';
+import MensajesPage from '../pages/mensajes';
+import GruposPage from '../pages/grupos';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -128,6 +130,15 @@ export const administrationRoutes = [
     path: '/user-roles/:userId',
     title: 'User Roles',
     component: UserRolesList,
+  },
+  { 
+    ath: '/mensajes', 
+    title: 'Mensajes', 
+    component: MensajesPage 
+  },
+  { path: '/grupos', 
+    title: 'Grupos', 
+    component: GruposPage 
   },
   {
     path: '/user-roles/:userId/asignar',

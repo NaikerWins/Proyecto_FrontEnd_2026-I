@@ -36,6 +36,9 @@ import {
 } from './routes';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdministrationRoute from './components/Auth/AdministrationRoute';
+import { MensajeriaProvider } from './context/MensajeriaContext';
+import GruposPage from './pages/grupos';
+import MensajesPage from './pages/mensajes';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -62,7 +65,7 @@ function App() {
   }, []);
 
   const routeElements = (
-    <>
+    <MensajeriaProvider>
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -95,6 +98,8 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/conductores" element={<ListConductores />} />
         <Route path="/conductores/crear" element={<CreateConductor />} />
+        <Route path="/mensajes" element={<MensajesPage />} />
+        <Route path="/grupos" element={<GruposPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />
@@ -133,7 +138,7 @@ function App() {
         </Route>
 
       </Routes>
-    </>
+    </MensajeriaProvider>
   );
   return loading ? (
     <Loader />
