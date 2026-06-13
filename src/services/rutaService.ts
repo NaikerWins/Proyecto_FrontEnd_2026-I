@@ -5,10 +5,11 @@ import { Ruta } from "../models/Ruta";
 const API_URL = "/rutas";
 
 export const rutaService = {
-  getRutas: async (): Promise<Ruta[]> => {
-    const res = await api.get<Ruta[]>(API_URL);
-    return res.data;
-  },
+  getRutas: async (nombre?: string): Promise<Ruta[]> => {
+  const params = nombre ? { nombre } : {};
+  const res = await apiNest.get<Ruta[]>(API_URL, { params });
+  return res.data;
+},
   getAll: async (): Promise<Ruta[]> => {
     const res = await api.get<Ruta[]>(API_URL);
     return res.data;
@@ -28,6 +29,11 @@ export const rutaService = {
   remove: async (id: number): Promise<void> => {
     await api.delete(`${API_URL}/${id}`);
   },
+
+  createConNodos: async (data: any): Promise<Ruta> => {
+  const res = await apiNest.post<Ruta>(API_URL, data);
+  return res.data;
+},
   estimarLlegada: async (rutaId: number, paraderoId: number, busId?: number) => {
   const res = await apiNest.get(`/rutas/estimar-llegada/${rutaId}/${paraderoId}`, { 
     params: busId ? { busId } : {} 
@@ -36,7 +42,3 @@ export const rutaService = {
 },
 }
 
-  createConNodos: async (data: any): Promise<Ruta> => {
-    const res = await api.post<Ruta>(API_URL, data);
-    return res.data;
-}
