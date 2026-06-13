@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { paraderoService, Paradero } from "../../services/paraderoService";
+import { paraderoService } from "../../services/paraderoService";
+import { Paradero } from "../../models/Paradero";
 
 
 export default function ParaderosList() {
@@ -70,7 +71,7 @@ export default function ParaderosList() {
                   <td className="px-4 py-3 text-gray-500">{p.latitud}</td>
                   <td className="px-4 py-3 text-gray-500">{p.longitud}</td>
                   <td className="px-4 py-3">
-                    <button onClick={() => eliminar(p.id)}
+                    <button onClick={() => p.id && eliminar(p.id)}
                       className="rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600">
                       Eliminar
                     </button>

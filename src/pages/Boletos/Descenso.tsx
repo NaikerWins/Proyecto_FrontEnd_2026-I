@@ -24,62 +24,63 @@ export default function Descenso() {
   }, []);
 
   const cargarDatos = async () => {
+  try {
+    const userStr = localStorage.getItem('user');
+    const user = userStr && userStr !== 'undefined' ? JSON.parse(userStr) : null;
+    const miId = user?.id?.toString();
 
-    try {
+    const [boletoData, paraderoData] = await Promise.all([
+      boletoService.getBoletosActivos(),
+      paraderoService.getParaderos(),
+    ]);
 
-      const [boletoData, paraderoData] = await Promise.all([
-        boletoService.getBoletosActivos(),
-        paraderoService.getParaderos(),
-      ]);
+    console.log('📦 Todos los boletos activos:', boletoData);
+    console.log('🔍 Mi ID:', miId);
 
-      setBoletos(boletoData);
-      setParaderos(paraderoData);
+    const misBoletos = boletoData.filter(
+      (b: any) => String(b.ciudadano_id) === String(miId)
+    );
 
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    console.log('✅ Mis boletos activos:', misBoletos);
+    setBoletos(misBoletos);
+    setParaderos(paraderoData);
+  } catch (error) {
+    console.error('❌ Error cargando datos:', error);
+  }
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const response = await boletoService.descenso({
+      boleto_id: Number(form.boleto_id),
+      paradero_descenso_id: Number(form.paradero_descenso_id),
+    });
 
-    e.preventDefault();
+    Swal.fire({
+      icon: 'success',
+      title: 'Descenso registrado',
+      html: `
+        <b>Boleto:</b> ${response.boleto_id}<br/>
+        <b>Paradero:</b> ${response.paradero_descenso}<br/>
+        <b>Hora:</b> ${new Date(response.hora_descenso).toLocaleString()}
+      `,
+    });
 
-    setLoading(true);
-
-    try {
-
-      const response = await boletoService.descenso({
-        boleto_id: Number(form.boleto_id),
-        paradero_descenso_id: Number(form.paradero_descenso_id),
-      });
-
-      Swal.fire({
-        icon: "success",
-        title: "Descenso registrado",
-        html: `
-          <b>Boleto:</b> ${response.boleto_id}<br/>
-          <b>Paradero:</b> ${response.paradero_descenso}<br/>
-          <b>Hora:</b> ${new Date(response.hora_descenso).toLocaleString()}
-        `
-      });
-
-      setForm({
-        boleto_id: "",
-        paradero_descenso_id: "",
-      });
-
-    } catch (e: any) {
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: e.response?.data?.message || "Error registrando descenso"
-      });
-
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Recargar boletos y limpiar formulario
+    cargarDatos();
+    setForm({ boleto_id: '', paradero_descenso_id: '' });
+  } catch (e: any) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: e.response?.data?.message || 'Error registrando descenso',
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -120,9 +121,24 @@ export default function Descenso() {
 
               {boletos.map((b) => (
 
-                <option key={b.id} value={b.id}>
-                  #{b.id}
-                </option>
+                <option
+  key={b.id}
+  value={b.id}
+>
+
+  Boleto #{b.id}
+
+  {" | "}
+
+  Ruta:
+  {b.programacion?.ruta?.nombre || "Sin ruta"}
+
+  {" | "}
+
+  Bus:
+  {b.programacion?.bus?.placa || "Sin bus"}
+
+</option>
 
               ))}
 

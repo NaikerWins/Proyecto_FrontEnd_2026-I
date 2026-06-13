@@ -1,21 +1,21 @@
-export interface GrupoPersona {
-    id?: number;
-    userId: string;
-    nombre: string;
-    rol: string;
-    bloqueado: boolean;
-    fechaUnion?: string;
-}
-
 export interface Grupo {
-    id?: number;
+    id: number;
     nombre: string;
     descripcion?: string;
-    imagen?: string;
-    tipo: string;
-    adminId: string;
-    adminNombre: string;
-    activo?: boolean;
-    fechaCreacion?: string;
-    miembros?: GrupoPersona[];
+    tipo: 'PUBLIC' | 'PRIVATE';
+    creadoPor?: string;
+    creadoEn?: string;
+    miembros?: MiembroGrupo[];
+    memberCount?: number;
+}
+
+export interface MiembroGrupo {
+    id: number;
+    usuarioId: string;
+    rol: 'ADMIN' | 'MEMBER';
+    unidoEn: string;
+    bloqueadoEn?: string | null;
+    nombre?: string;
+    apellido?: string;
+    email?: string;
 }

@@ -1,4 +1,5 @@
-import apiNest from "../interceptors/axiosNestInterceptor";
+import apiNest from '../interceptors/axiosNest';
+import { Grupo, MiembroGrupo } from '../models/Grupo';
 
 const API_URL = "/grupos";
 
@@ -9,6 +10,17 @@ class GrupoService {
             return response.data;
         } catch (error) {
             console.error("Error al obtener grupos:", error);
+        }
+    }
+
+    async getPublicos(): Promise<Grupo[]> {
+        try {
+            const res = await apiNest.get<Grupo[]>(`${API_URL}?tipo=PUBLIC`);
+            return res.data.map((g) => ({
+                ...g,
+                memberCount: g.miembros?.length ?? 0,
+            }));
+        } catch {
             return [];
         }
     }
@@ -19,61 +31,68 @@ class GrupoService {
             return response.data;
         } catch (error) {
             console.error("Error al obtener grupos del usuario:", error);
+        }
+    }
+
+    async getMisGrupos(): Promise<Grupo[]> {
+        try {
+            const res = await apiNest.get<Grupo[]>(`${API_URL}/mine`);
+            return res.data.map((g) => ({
+                ...g,
+                memberCount: g.miembros?.length ?? 0,
+            }));
+        } catch {
             return [];
         }
     }
 
-    async getGrupoById(id: number) {
+    async getMiembros(grupoId: number): Promise<MiembroGrupo[]> {
         try {
-            const response = await apiNest.get(`${API_URL}/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error al obtener grupo:", error);
-            return null;
+            const res = await apiNest.get<MiembroGrupo[]>(`${API_URL}/${grupoId}/members`);
+            return res.data;
+        } catch {
+            return [];
         }
     }
 
-    async crearGrupo(
-        adminId: string,
-        adminNombre: string,
-        datos: {
-            nombre: string;
-            descripcion?: string;
-            tipo: string;
-            miembros: { userId: string; nombre: string }[];
-        }
-    ) {
+    async unirse(grupoId: number): Promise<MiembroGrupo | null> {
         try {
-            const response = await apiNest.post(
-                `${API_URL}/${adminId}/${encodeURIComponent(adminNombre)}`,
-                datos
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error al crear grupo:", error);
-            return null;
+            const res = await apiNest.post<MiembroGrupo>(`${API_URL}/${grupoId}/join`);
+            return res.data;
+        } catch (err: any) {
+            throw new Error(err?.response?.data?.message ?? 'Error al unirse al grupo');
         }
     }
 
-    async unirse(grupoId: number, userId: string, nombre: string) {
+    async salir(grupoId: number): Promise<void> {
         try {
-            const response = await apiNest.post(
-                `${API_URL}/${grupoId}/unirse/${userId}/${encodeURIComponent(nombre)}`
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error al unirse al grupo:", error);
-            return null;
+            await apiNest.delete(`${API_URL}/${grupoId}/leave`);
+        } catch (err: any) {
+            throw new Error(err?.response?.data?.message ?? 'Error al salir del grupo');
         }
     }
 
-    async salir(grupoId: number, userId: string) {
+    async promover(grupoId: number, usuarioId: string): Promise<void> {
         try {
-            const response = await apiNest.delete(`${API_URL}/${grupoId}/salir/${userId}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error al salir del grupo:", error);
-            return null;
+            await apiNest.post(`${API_URL}/${grupoId}/members/${usuarioId}/promote`);
+        } catch (err: any) {
+            throw new Error(err?.response?.data?.message ?? 'Error al promover miembro');
+        }
+    }
+
+    async remover(grupoId: number, usuarioId: string): Promise<void> {
+        try {
+            await apiNest.delete(`${API_URL}/${grupoId}/members/${usuarioId}`);
+        } catch (err: any) {
+            throw new Error(err?.response?.data?.message ?? 'Error al remover miembro');
+        }
+    }
+
+    async bloquear(grupoId: number, usuarioId: string): Promise<void> {
+        try {
+            await apiNest.post(`${API_URL}/${grupoId}/members/${usuarioId}/block`);
+        } catch (err: any) {
+            throw new Error(err?.response?.data?.message ?? 'Error al bloquear miembro');
         }
     }
 }

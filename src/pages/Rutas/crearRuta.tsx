@@ -60,7 +60,7 @@ export default function CreateRuta() {
           </div>
         ))}
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-white">Descripción</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-white">Descripción</label>
           <textarea name="descripcion" value={form.descripcion} rows={2}
             onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
             className="w-full rounded border border-stroke px-4 py-2 text-sm dark:border-strokedark dark:bg-boxdark dark:text-white" />
@@ -69,7 +69,7 @@ export default function CreateRuta() {
         {/* Paraderos */}
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-white">
-            Paraderos * <span className="text-gray-400 font-normal">(mínimo 3, en orden)</span>
+            Paraderos * <span className="text-gray-400 font-normal">(mínimo 3, en orden)</span>
           </label>
           <div className="flex gap-2">
             <select value={paraderoSeleccionado} onChange={(e) => setParaderoSeleccionado(e.target.value)}
@@ -96,7 +96,7 @@ export default function CreateRuta() {
               ))}
             </div>
           )}
-          <p className="mt-1 text-xs text-gray-400">{nodosSeleccionados.length}/3 paraderos mínimos</p>
+          <p className="mt-1 text-xs text-gray-400">{nodosSeleccionados.length}/3 paraderos mínimos</p>
         </div>
 
         {error && <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-600">{error}</div>}

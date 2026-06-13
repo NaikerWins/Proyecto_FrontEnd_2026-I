@@ -1,99 +1,162 @@
-import { useState } from "react";
-import { boletoService } from "../../services/boletoService";
-import { DescensoResponse } from "../../models/Boleto";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { boletoService } from '../../services/boletoService';
+import { HistorialViaje } from '../../models/Historial';
+import { useNavigate } from 'react-router-dom';
+// Iconos personalizados para abordaje/descenso
+const iconAbordaje = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
-export default function Descenso() {
+const iconDescenso = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+
+const iconNormal = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+export default function Historial() {
+  const [viajes, setViajes] = useState<HistorialViaje[]>([]);
+  const [selected, setSelected] = useState<HistorialViaje | null>(null);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ boleto_id: "", paradero_descenso_id: "" });
-  const [resultado, setResultado] = useState<DescensoResponse | null>(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setResultado(null);
-    setLoading(true);
-    try {
-      const res = await boletoService.descenso({
-        boleto_id: parseInt(form.boleto_id),
-        paradero_descenso_id: parseInt(form.paradero_descenso_id),
-      });
-      setResultado(res);
-    } catch (e: any) {
-      setError(e.response?.data?.message || "Error al registrar descenso.");
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    // Obtener el id del usuario logueado
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const ciudadanoId = user?.id.toString();
+    if (ciudadanoId) {
+      boletoService.getHistorial(ciudadanoId).then(setViajes);
     }
-  };
+  }, []);
 
-  return (
-    <div className="mx-auto max-w-lg px-4 py-8">
-      <button onClick={() => navigate("/")} className="mb-4 text-sm text-primary hover:underline">← Volver</button>
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-        Registrar Descenso
-      </h1>
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleString();
 
-      {resultado ? (
-        <div className="rounded-lg border border-green-300 bg-green-50 p-6 text-center">
-          <div className="text-4xl mb-3">🎉</div>
-          <h2 className="text-xl font-bold text-green-700 mb-4">
-            {resultado.message}
-          </h2>
-          <div className="space-y-2 text-sm text-gray-700">
-            <p><span className="font-medium">Boleto ID:</span> {resultado.boleto_id}</p>
-            <p><span className="font-medium">Paradero de descenso:</span> {resultado.paradero_descenso}</p>
-            <p>
-              <span className="font-medium">Hora de descenso:</span>{" "}
-              {new Date(resultado.hora_descenso).toLocaleTimeString()}
-            </p>
+  if (selected) {
+    const { ruta } = selected;
+    const posiciones: [number, number][] = ruta.paraderos_completos.map(
+  (p) => [p.latitud, p.longitud]
+);
+const centro: [number, number] =
+  posiciones.length > 0
+    ? posiciones[Math.floor(posiciones.length / 2)]
+    : [4.6097, -74.0817]; // fallback Bogotá
+    return (
+      <div className="p-4">
+        <button onClick={() => setSelected(null)} className="mb-4 text-sm text-primary hover:underline">
+          ← Volver al historial
+        </button>
+
+        <h2 className="text-xl font-bold mb-4">Detalle del viaje</h2>
+
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <p><strong>Boleto:</strong> #{selected.boleto_id}</p>
+            <p><strong>Abordaje:</strong> {formatDate(selected.fecha_abordaje)}</p>
+            <p><strong>Descenso:</strong> {selected.fecha_descenso ? formatDate(selected.fecha_descenso) : '—'}</p>
+            <p><strong>Tiempo total:</strong> {selected.tiempo_total_minutos} min</p>
           </div>
-          <button
-            onClick={() => setResultado(null)}
-            className="mt-5 rounded bg-primary px-5 py-2 text-sm text-white hover:bg-opacity-90"
-          >
-            Nuevo descenso
-          </button>
+          <div>
+            <p><strong>Bus placa:</strong> {selected.bus_placa || 'No disponible'}</p>
+            <p><strong>Conductor:</strong> {selected.conductor_nombre || 'No disponible'}</p>
+            <p><strong>Paradero abordaje:</strong> {selected.paradero_abordaje?.nombre}</p>
+            <p><strong>Paradero descenso:</strong> {selected.paradero_descenso?.nombre || '—'}</p>
+          </div>
         </div>
+
+        <div style={{ height: '400px', width: '100%' }}>
+          <MapContainer center={centro} zoom={13} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {/* Línea de la ruta */}
+            <Polyline positions={posiciones} color="blue" />
+
+            {/* Marcadores de todos los paraderos */}
+            {ruta.paraderos_completos.map((p) => (
+              <Marker key={p.id} position={[p.latitud, p.longitud]} icon={iconNormal}>
+                <Popup>{p.nombre}</Popup>
+              </Marker>
+            ))}
+
+            {/* Marcador de abordaje (verde) */}
+            {selected.paradero_abordaje && (
+  <Marker
+    position={[selected.paradero_abordaje.latitud, selected.paradero_abordaje.longitud]}
+    icon={iconAbordaje}
+  >
+                <Popup>
+                  <strong>Abordaje</strong><br />
+                  {selected.paradero_abordaje.nombre}<br />
+                  {formatDate(selected.fecha_abordaje)}
+                </Popup>
+              </Marker>
+            )}
+
+            {/* Marcador de descenso (rojo) */}
+            {selected.paradero_descenso && (
+  <Marker
+    position={[selected.paradero_descenso.latitud, selected.paradero_descenso.longitud]}
+    icon={iconDescenso}
+  >
+                <Popup>
+                  <strong>Descenso</strong><br />
+                  {selected.paradero_descenso.nombre}<br />
+                  {selected.fecha_descenso && formatDate(selected.fecha_descenso)}
+                </Popup>
+              </Marker>
+            )}
+          </MapContainer>
+        </div>
+      </div>
+    );
+  }
+
+  // Vista de lista
+  return (
+    <div className="p-4">
+      <button
+        onClick={() => navigate("/")}
+        className="mb-4 text-sm text-primary hover:underline"
+      >
+        ← Volver
+      </button>
+      
+      <h1 className="text-2xl font-bold mb-6 dark:text-white">Historial de Viajes</h1>
+      {viajes.length === 0 ? (
+        <p className="text-gray-500">Aún no has realizado viajes completados.</p>
       ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-lg border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark space-y-4"
-        >
-          {[
-            { name: "boleto_id", label: "ID del Boleto activo" },
-            { name: "paradero_descenso_id", label: "ID Paradero de Descenso" },
-          ].map((c) => (
-            <div key={c.name}>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-white">
-                {c.label}
-              </label>
-              <input
-                type="number"
-                name={c.name}
-                value={form[c.name as keyof typeof form]}
-                onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
-                required
-                className="w-full rounded border border-stroke px-4 py-2 text-sm dark:border-strokedark dark:bg-boxdark dark:text-white"
-              />
+        <div className="space-y-3">
+          {viajes.map((v) => (
+            <div
+              key={v.boleto_id}
+              className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 dark:border-strokedark"
+              onClick={() => setSelected(v)}
+            >
+              <div className="flex justify-between">
+                <span className="font-medium">Boleto #{v.boleto_id}</span>
+                <span className="text-sm text-gray-500">{formatDate(v.fecha_abordaje)}</span>
+              </div>
+              <p className="text-sm">
+                {v.ruta?.nombre} — ${v.monto?.toLocaleString()}
+              </p>
+              <p className="text-xs text-gray-400">
+                {v.paradero_abordaje?.nombre} → {v.paradero_descenso?.nombre || 'En curso'}
+              </p>
             </div>
           ))}
-
-          {error && (
-            <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded bg-primary py-2.5 text-sm font-medium text-white hover:bg-opacity-90 disabled:opacity-60"
-          >
-            {loading ? "Procesando..." : "Registrar Descenso"}
-          </button>
-        </form>
+        </div>
       )}
     </div>
   );

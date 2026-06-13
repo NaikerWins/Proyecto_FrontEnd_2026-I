@@ -1,5 +1,5 @@
 export interface AbordajeRequest {
-  ciudadano_id: number;
+  ciudadano_id: string;
   programacion_id: number;
   metodo_pago_id: number;
   paradero_abordaje_id: number;
@@ -14,6 +14,7 @@ export interface AbordajeResponse {
   message: string;
   boleto_id: number;
   monto_cobrado: number;
+  saldo_restante?: number;
   ocupacion_actual: number;
   capacidad_maxima: number;
 }

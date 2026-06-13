@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+
+  import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-apexcharts';
 import { reporteService } from '../../services/reportesService';
 
@@ -154,3 +155,6 @@ const IngresosPorMetodo = () => {
 };
 
 export default IngresosPorMetodo;
+
+  
+  

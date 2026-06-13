@@ -9,57 +9,23 @@ import {
   IconButton,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
-import GenericForm, {
-  FormField,
-} from '../../components/Generics/MUI/GenericForm';
+import GenericForm, { FormField } from '../../components/Generics/MUI/GenericForm';
 import { incidenteService } from '../../services/incidenteService';
 import { busService } from '../../services/busService';
-import { conductorService } from '../../services/conductorService'; // NUEVO
+import { conductorService } from '../../services/conductorService';
 import { Bus } from '../../models/Bus';
-import { Conductor } from '../../models/Conductor'; // NUEVO
 import Swal from 'sweetalert2';
 
 const CreateIncidente: React.FC = () => {
   const navigate = useNavigate();
   const { busId } = useParams<{ busId: string }>();
 
+  // Estados
   const [buses, setBuses] = useState<{ value: any; label: string }[]>([]);
-  const [conductores, setConductores] = useState<
-    { value: any; label: string }[]
-  >([]); // NUEVO
-
+  const [conductores, setConductores] = useState<{ value: any; label: string }[]>([]);
   const [fotos, setFotos] = useState<string[]>(['']);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Buses
-        const dataBuses = await busService.getBuses();
-
-        setBuses(
-          dataBuses.map((b: Bus) => ({
-            value: b.id,
-            label: `${b.placa} - ${b.modelo}`,
-          })),
-        );
-
-        // Conductores
-        const dataConductores = await conductorService.getConductores();
-
-        setConductores(
-          dataConductores.map((c: Conductor) => ({
-            value: c.id,
-            label: `${c.persona.nombre} ${c.persona.apellido}`,
-          })),
-        );
-      } catch (error) {
-        console.error('Error al cargar datos:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+  // Opciones para selects
   const tipoOptions = [
     { label: 'Accidente menor', value: 'accidente_menor' },
     { label: 'Falla mecánica', value: 'falla_mecanica' },
@@ -74,6 +40,7 @@ const CreateIncidente: React.FC = () => {
     { label: 'Crítico', value: 'critico' },
   ];
 
+  // Campos del formulario
   const incidenteFields: FormField[] = [
     {
       name: 'busId',
@@ -85,8 +52,8 @@ const CreateIncidente: React.FC = () => {
     {
       name: 'conductorId',
       label: 'Conductor',
-      type: 'select', // CAMBIADO
-      options: conductores, // NUEVO
+      type: 'select',
+      options: conductores,
       required: true,
     },
     {
@@ -113,6 +80,7 @@ const CreateIncidente: React.FC = () => {
     },
   ];
 
+  // Valores iniciales
   const initialValues = {
     busId: busId || '',
     conductorId: '',
@@ -121,6 +89,37 @@ const CreateIncidente: React.FC = () => {
     descripcion: '',
   };
 
+  // Cargar buses y conductores al montar
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [dataBuses, dataConductores] = await Promise.all([
+          busService.getBuses(),
+          conductorService.getConductores(),
+        ]);
+
+        setBuses(
+          dataBuses.map((b: Bus) => ({
+            value: b.id,
+            label: `${b.placa} - ${b.modelo}`,
+          })),
+        );
+
+        setConductores(
+          dataConductores.map((c: any) => ({
+            value: c.id ?? '',
+            label: `${c.persona?.nombre ?? ''} ${c.persona?.apellido ?? ''}`.trim() || `Conductor ${c.id}`,
+          })),
+        );
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Manejo de fotos
   const handleAddFoto = () => {
     if (fotos.length < 5) {
       setFotos([...fotos, '']);
@@ -137,6 +136,7 @@ const CreateIncidente: React.FC = () => {
     setFotos(fotos.filter((_, i) => i !== index));
   };
 
+  // Envío del formulario
   const handleSubmit = async (values: Record<string, any>) => {
     try {
       const fotosValidas = fotos
@@ -159,7 +159,6 @@ const CreateIncidente: React.FC = () => {
           icon: 'success',
           timer: 3000,
         });
-
         navigate(`/incidentes/bus/${values.busId}`);
       } else {
         Swal.fire({
@@ -168,12 +167,13 @@ const CreateIncidente: React.FC = () => {
           icon: 'error',
         });
       }
-    } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Error al reportar el incidente',
-        icon: 'error',
-      });
+    } catch (error: any) {
+      const mensaje = error.response?.data?.message
+        ? (Array.isArray(error.response.data.message)
+            ? error.response.data.message.join(', ')
+            : error.response.data.message)
+        : 'Error al reportar el incidente';
+      Swal.fire({ title: 'Error', text: mensaje, icon: 'error' });
     }
   };
 
@@ -193,6 +193,7 @@ const CreateIncidente: React.FC = () => {
           onCancel={() => navigate(-1)}
         />
 
+        {/* Sección de fotos */}
         <Box
           sx={{
             mt: 3,
@@ -215,12 +216,8 @@ const CreateIncidente: React.FC = () => {
                 variant="outlined"
                 size="small"
               />
-
               {fotos.length > 1 && (
-                <IconButton
-                  color="error"
-                  onClick={() => handleRemoveFoto(index)}
-                >
+                <IconButton color="error" onClick={() => handleRemoveFoto(index)}>
                   <Delete />
                 </IconButton>
               )}

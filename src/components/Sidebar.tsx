@@ -340,6 +340,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                 <li>
                   <NavLink
+                    to="/turnos"
+                    className={linkClass(
+                      pathname ===
+                        '/turnos',
+                    )}
+                  >
+                    Turnos
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
                     to="/reportes/tendenciaincidentes"
                     className={linkClass(
                       pathname ===

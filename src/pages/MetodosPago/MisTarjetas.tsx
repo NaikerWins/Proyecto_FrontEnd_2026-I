@@ -51,6 +51,11 @@ export default function MisTarjetas() {
 
 
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Mis Métodos de Pago</h1>
+        <button onClick={() => navigate("/metodos-pago/tipos")}
+          className="rounded bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-opacity-90">
+          Tipos de metodo
+        </button>
+        
         <button onClick={() => navigate("/metodos-pago/crear")}
           className="rounded bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-opacity-90">
           + Agregar método

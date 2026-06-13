@@ -3,12 +3,11 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-import CreateRuta from './pages/Rutas/crearRuta';
-import ParaderosList from './pages/Paraderos/list';
-import CreateParadero from './pages/Paraderos/create';
-import CreateNodo from './pages/Nodos/Create';
-import ProgramacionesList from './pages/Programaciones/List';
-import CreateProgramacion from './pages/Programaciones/Create';
+import ParaderosList from "./pages/Paraderos/list";
+import CreateParadero from "./pages/Paraderos/create";
+import CreateNodo from "./pages/Nodos/Create";
+import ProgramacionesList from "./pages/Programaciones/List";
+import CreateProgramacion from "./pages/Programaciones/Create";
 import ECommerce from './pages/Dashboard/ECommerce';
 import SignInPage from './pages/Authentication/SignInPage';
 import SignUp from './pages/Authentication/SignUp';
@@ -25,17 +24,28 @@ import Abordaje from './pages/Boletos/Abordaje';
 import Descenso from './pages/Boletos/Descenso';
 import Historial from './pages/Boletos/Historial';
 import Loader from './common/Loader';
-import MisTarjetas from './pages/MetodosPago/MisTarjetas';
-import CreateMetodoPago from './pages/MetodosPago/Create';
-import TiposList from './pages/MetodosPago/TiposList';
-import ListConductores from './pages/Conductores/list';
-import CreateConductor from './pages/Conductores/create';
-import { administrationRoutes, generalRoutes } from './routes';
+import MisTarjetas from "./pages/MetodosPago/MisTarjetas";
+import CreateMetodoPago from "./pages/MetodosPago/Create";
+import TiposList from "./pages/MetodosPago/TiposList";
+import ListConductores from "./pages/Conductores/list";
+import CreateConductor from "./pages/Conductores/create";
+import ListGrupos from "./pages/Grupos/ListGrupos";
+import MisGrupos from "./pages/Grupos/MisGrupos";
+import DetalleGrupo from "./pages/Grupos/DetalleGrupo";
+import PqrsPage from "./pages/Pqrs/Pqrs";
+import AgendarCita from "./pages/Citas/AgendarCita";
+import CitaCancelada from "./pages/Citas/CitaCancelada";
+import AdminPqrs from "./pages/Pqrs/AdminPqrs";
+import Perfil from "./pages/Perfil/Perfil";
+
+import {
+  administrationRoutes,
+  generalRoutes,
+} from './routes';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdministrationRoute from './components/Auth/AdministrationRoute';
+import CreateRuta from './pages/Rutas/crearRuta';
 import { MensajeriaProvider } from './context/MensajeriaContext';
-import GruposPage from './pages/grupos';
-import MensajesPage from './pages/mensajes';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -95,8 +105,15 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/conductores" element={<ListConductores />} />
         <Route path="/conductores/crear" element={<CreateConductor />} />
-        <Route path="/mensajes" element={<MensajesPage />} />
-        <Route path="/grupos" element={<GruposPage />} />
+        <Route path="/grupos" element={<ListGrupos />} />
+        <Route path="/grupos/mis-grupos" element={<MisGrupos />} />
+        <Route path="/grupos/:id" element={<DetalleGrupo />} />
+        <Route path="/pqrs" element={<PqrsPage />} />
+        <Route path="/citas/agendar" element={<AgendarCita />} />
+        <Route path="/cita-cancelada" element={<CitaCancelada />} />
+        <Route path="/pqrs/admin" element={<AdminPqrs />} />
+        <Route path="/perfil" element={<Perfil />} />
+        
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route index element={<ECommerce />} />

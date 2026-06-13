@@ -1,3 +1,10 @@
+export interface ParaderoInfo {
+  id: number;
+  nombre: string;
+  latitud: number;
+  longitud: number;
+}
+
 export interface HistorialViaje {
   boleto_id: number;
   estado: string;
@@ -5,18 +12,13 @@ export interface HistorialViaje {
   fecha_abordaje: string;
   fecha_descenso: string;
   tiempo_total_minutos: number;
-  bus_id: number;
-  conductor_id: number;
+  bus_placa?: string;
+  conductor_nombre?: string;
   ruta: {
     id: number;
     nombre: string;
-    paraderos_completos: {
-      id: number;
-      nombre: string;
-      latitud: number;
-      longitud: number;
-    }[];
+    paraderos_completos: ParaderoInfo[];
   };
-  paradero_abordaje: { id: number; nombre: string };
-  paradero_descenso: { id: number; nombre: string };
+  paradero_abordaje: ParaderoInfo;
+  paradero_descenso: ParaderoInfo | null;
 }

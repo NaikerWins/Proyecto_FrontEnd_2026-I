@@ -23,9 +23,13 @@ import ConfirmacionRecarga from '../pages/Recargas/ConfirmacionRecarga';
 import IngresosPorMetodo from '../pages/Reportes/IngresosPorMetodo';
 import DistribucionEtaria from '../pages/Reportes/DistribucionEtaria';
 import TendenciaIncidentes from '../pages/Reportes/TendenciaIncidentes';
+import SeguimientoRuta from '../pages/Monitoreo/SeguimientoRuta';
+import PanelSupervisor from '../pages/Monitoreo/PanelSupervisor';
+import ActivarNotificacion from '../pages/Monitoreo/ActivarNotificacion';
+import ConfiguracionClima from '../pages/Monitoreo/ConfiguracionClima';
 import Horarios from '../pages/Programaciones/Horarios';
 import MensajesPage from '../pages/mensajes';
-import GruposPage from '../pages/grupos';
+// import GruposPage from '../pages/grupos';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -85,10 +89,16 @@ const UpdateConductor = lazy(() => import('../pages/Conductores/update'));
 /** Gestión de usuarios, roles y permisos (solo roles de administración en backend). */
 export const administrationRoutes = [
   {
+  path: '/panel',
+  title: 'Panel de Control de Flota',
+  component: PanelSupervisor,
+},
+  {
     path: '/RolePermission/list',
     title: 'list RolePermission',
     component: RolePermissionPage,
   },
+
   {
     path: '/permission/list',
     title: 'LIST permission',
@@ -103,7 +113,8 @@ export const administrationRoutes = [
     path: '/roles/crear',
     title: 'Create Role',
     component: CreateRole,
-  },
+  }
+  ,
   {
     path: '/roles/editar/:id',
     title: 'Update Role',
@@ -134,7 +145,7 @@ export const administrationRoutes = [
     title: 'Mensajes',
     component: MensajesPage,
   },
-  { path: '/grupos', title: 'Grupos', component: GruposPage },
+  //{ path: '/grupos', title: 'Grupos', component: GruposPage },
   {
     path: '/user-roles/:userId/asignar',
     title: 'Assign Role',
@@ -188,9 +199,24 @@ export const administrationRoutes = [
 
 export const generalRoutes = [
   {
-    path: '/buses',
-    title: 'Buses List',
-    component: ListBuses,
+  path: '/monitoreo/ruta/:rutaId',
+  title: 'Seguimiento de Ruta',
+  component: SeguimientoRuta,
+},
+{
+  path: '/notificacion/bus',
+  title: 'Notificación de Bus Cercano',
+  component: ActivarNotificacion,
+},
+{
+  path: '/perfil/clima',
+  title: 'Configuración de Clima',
+  component: ConfiguracionClima,
+},
+  { 
+    path: '/buses', 
+    title: 'Buses List', 
+    component: ListBuses 
   },
   {
     path: '/buses/crear',

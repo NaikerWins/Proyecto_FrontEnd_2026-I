@@ -45,11 +45,14 @@ export const boletoService = {
   return res.data;
 },
 
+
+
+
 async getBoletosActivos(): Promise<any[]> {
 
   try {
 
-    const response = await api.get("/boletos/activos");
+    const response = await apiNest.get("/boletos/activos");
     return response.data;
 
   } catch (error) {

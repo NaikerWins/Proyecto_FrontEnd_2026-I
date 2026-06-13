@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+
+  import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-apexcharts';
 
 import { reporteService } from '../../services/reportesService';
@@ -512,3 +513,6 @@ const TendenciaIncidentes = () => {
 };
 
 export default TendenciaIncidentes;
+  
+  
+  

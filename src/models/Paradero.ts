@@ -6,6 +6,7 @@ export interface Paradero {
     longitud: number;
     clasificacion: string;
     activo?: boolean;
+    descripcion?: string;
 }
 
 export interface ParaderoCercano {
