@@ -239,6 +239,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                 <li>
                   <NavLink
+                    to="/turnos"
+                    className={linkClass(
+                      pathname.includes('/turnos'),
+                    )}
+                  >
+                    Turnos
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
                     to="/empresas"
                     className={linkClass(
                       pathname.includes('/empresas'),

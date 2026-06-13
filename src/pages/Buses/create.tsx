@@ -4,8 +4,9 @@ import { Container, Typography, Box } from "@mui/material";
 import GenericForm, { FormField } from "../../components/Generics/MUI/GenericForm";
 import { busService } from "../../services/busService";
 import { Empresa } from "../../models/Empresa";
-import apiNest from "../../interceptors/axiosNestInterceptor";
+//import apiNest from "../../interceptors/axiosNestInterceptor";
 import Swal from "sweetalert2";
+import api from "../../interceptors/busesInterceptor";
 
 const CreateBus: React.FC = () => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ const CreateBus: React.FC = () => {
     useEffect(() => {
         const fetchEmpresas = async () => {
             try {
-                const response = await apiNest.get<Empresa[]>("/empresas");
+                const response = await api.get<Empresa[]>("/empresas");
                 setEmpresas(
                     response.data.map((e) => ({
                         value: e.id,

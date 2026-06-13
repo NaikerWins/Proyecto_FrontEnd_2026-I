@@ -3,12 +3,18 @@ import GenericTable from '../../components/Generics/GenericList';
 import { Programacion } from '../../models/Programacion';
 import { programacionService } from '../../services/programacionService';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 
 const ListProgramaciones: React.FC = () => {
     const navigate = useNavigate();
     const [programaciones, setProgramaciones] = useState<Programacion[]>([]);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
+
+    useEffect(() => {
+        fetchData();
+    }, [location.state]);
 
     useEffect(() => {
         fetchData();
